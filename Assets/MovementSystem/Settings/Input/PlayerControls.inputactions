@@ -11,7 +11,8 @@
                     "id": "0315fe1f-9e1f-46eb-ac41-3aa8ee4c7a2f",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Jump",
@@ -19,7 +20,8 @@
                     "id": "3fe14fab-2ac3-48f0-9f1c-af1cc5e4933c",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Crouch",
@@ -27,7 +29,8 @@
                     "id": "4666eb6c-7fb4-46cd-b150-b46c3b7c985f",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Lean Left",
@@ -35,7 +38,8 @@
                     "id": "8b8b2ff5-9172-4781-9894-73b8290af0a3",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Lean Right",
@@ -43,7 +47,8 @@
                     "id": "2f9edd56-76ba-4438-a276-46169a8482f4",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Sprint",
@@ -51,7 +56,8 @@
                     "id": "9064b936-c555-4ae7-9496-0f3e0bec3b58",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Look",
@@ -59,7 +65,8 @@
                     "id": "c99dab93-278d-43ef-a449-510c7866ab6a",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -210,7 +217,7 @@
                     "name": "",
                     "id": "8340a4d2-17ba-46d4-b357-fa1155e7b6f7",
                     "path": "<Keyboard>/c",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Keyboard and Mouse",
                     "action": "Crouch",
@@ -221,7 +228,7 @@
                     "name": "",
                     "id": "cf801e17-7b13-41f7-a18b-90046deb68ad",
                     "path": "<Keyboard>/ctrl",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Keyboard and Mouse",
                     "action": "Crouch",
