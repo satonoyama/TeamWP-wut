@@ -1025,7 +1025,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3088141795552526657}
-  m_LocalRotation: {x: 3.900169e-13, y: 0.0000000039851895, z: -0.00000020778371, w: 1}
+  m_LocalRotation: {x: 3.900169e-13, y: 0.0000000039851895, z: -0.00000020778371,
+    w: 1}
   m_LocalPosition: {x: -66.73839, y: 7.1054274e-15, z: 1.2167823e-14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1270,7 +1271,7 @@ GameObject:
   - component: {fileID: 3088141795552848427}
   - component: {fileID: 3088141795543142563}
   m_Layer: 0
-  m_Name: Blue (1)
+  m_Name: IceDragon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
