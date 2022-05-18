@@ -23,7 +23,7 @@ public abstract class MobStatus : MonoBehaviour
     [SerializeField] private float maxHp = 100;
     protected Animator animator;
     protected StateEnum state = StateEnum.eNormal;
-    private float hp;
+    protected float hp;
 
     protected virtual void Start()
     {
@@ -41,7 +41,7 @@ public abstract class MobStatus : MonoBehaviour
         // TODO : ライフゲージの表示終了などを追加する
     }
 
-    public void Damage(int damage)
+    public virtual void Damage(int damage)
     {
         if(state == StateEnum.eDie) { return; }
 
@@ -51,7 +51,7 @@ public abstract class MobStatus : MonoBehaviour
         OnDie();
     }
 
-    public void GoToAttackStateIfPossible(string name = "Attack")
+    public virtual void GoToAttackStateIfPossible(string name = "Attack")
     {
         if(!IsAttackable) { return; }
 
