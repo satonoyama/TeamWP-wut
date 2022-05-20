@@ -1,143 +1,135 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyStatus))]
-public class EnemyAttack : MonoBehaviour
+public abstract class EnemyAttack : MonoBehaviour
 {
     [SerializeField] private AttackColliderMap[] attackColliders;
-    [SerializeField] private AttackExecutionOrder[] executionOrders;
-    [SerializeField] private float cooldownCounter = 0.0f;
+    [SerializeField] protected EnemyStatus status;
 
-    private EnemyStatus status;
-    private int executionIndex = 0;     // 攻撃実行リストのインデックス
-    private int orderIndex = 0;         // 実行順リストのインデックス
-    private bool isHit = false;
+    protected int executionIndex = 0;     // 攻撃実行リストのインデックス
+    protected int atkListIndex = 0;       // 実行リストのインデックス
+    [SerializeField] protected float cooldownCounter = 0.0f;
+    protected bool isHit = false;
 
-    void Start()
+    protected virtual void SetAttackName(AttackColliderMap[] atkColliders, int i, string name)
+    {
+        attackColliders[i].attackName = name;
+    }
+
+    protected virtual float GetAttackPower(AttackColliderMap[] atkCollisions)
+    {
+        var atkPow = 0.0f;
+
+        for (int i = 0; i < atkCollisions.Length; i++)
+        {
+            if (!atkCollisions[i].collider.enabled) { continue; }
+
+            atkPow = atkCollisions[i].power;
+            break;
+        }
+
+        return atkPow;
+    }
+
+    protected virtual void Start()
     {
         cooldownCounter = 0.0f;
-
-        for (int i = 0; i < attackColliders.Length; i++)
-        {
-            attackColliders[i].collider.enabled = false;
-            attackColliders[i].atkPossibleCollider.enabled = true;
-
-            // 最初に使用する攻撃が持っているCollider以外を判定不可にする
-            string name = executionOrders[executionIndex].attackExecutionOrders[orderIndex];
-
-            if (!name.Equals(attackColliders[i].attackName))
-            {
-                attackColliders[i].atkPossibleCollider.enabled = false;
-            }
-        }
 
         status = GetComponent<EnemyStatus>();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
-        if(!status.IsAttackable) { return; }
+        if(!status.CanAttack()) { return; }
 
         cooldownCounter -= Time.deltaTime;
     }
 
-    // 攻撃可能な状態であれば攻撃を行う
-    public void AttackIfPossible()
+    protected virtual void InitAttackColliders(AttackColliderMap[] atkColliders, int i, string atkName, string useAtkName = "Attack")
     {
-        if (!status.IsAttackable || status.IsScream) { return; }
+        atkColliders[i].attackName = atkName;
+        atkColliders[i].collider.enabled = false;
+        atkColliders[i].atkPossibleCollider.enabled = false;
 
-        string name = executionOrders[executionIndex].attackExecutionOrders[orderIndex];
+        // 最初に使用する攻撃が持っているColliderを判定可能にする
+        if (!useAtkName.Equals(atkName)) { return; }
 
-        Debug.Log(name + "攻撃を実行！！");
+        atkColliders[i].atkPossibleCollider.enabled = true;
+    }
+
+    // 攻撃可能な状態であれば攻撃を行う
+    public virtual void AttackIfPossible()
+    {
+        if (status.CanAttack()) { return; }
 
         status.OnMoveFinished();
-        status.GoToAttackStateIfPossible(name);
+        status.GoToAttackStateIfPossible();
     }
 
     // 攻撃対象が範囲内にいる間呼ばれる
-    public void OnAttackStay(Collider collider)
+    public virtual void OnAttackStay(Collider collider)
     {
         if (cooldownCounter > 0.0f) { return; }
 
         AttackIfPossible();
     }
 
-    public void OnAttackStart()
+    public virtual void OnAttackStart()
     {
-        for(int i = 0; i < attackColliders.Length; i++)
-        {
-            string name = executionOrders[executionIndex].attackExecutionOrders[orderIndex];
-            if (!name.Equals(attackColliders[i].attackName)) { continue; }
+        OnAttackColliderStart(attackColliders);
 
-            attackColliders[i].collider.enabled = true;
+        status.GetWeakPoint.OnCollisionEnableFinished();
+    }
+
+    protected virtual void OnAttackColliderStart(AttackColliderMap[] atkColliders, string useAtkName = "Attack")
+    {
+        for (int i = 0; i < atkColliders.Length; i++)
+        {
+            if (!useAtkName.Equals(atkColliders[i].attackName)) { continue; }
+
+            atkColliders[i].collider.enabled = true;
+            cooldownCounter = atkColliders[i].cooldown;
         }
     }
 
-    public void OnHitAttack(Collider collider)
+    public virtual void OnHitAttack(Collider collider)
     {
         if (isHit) { return; }
 
         isHit = true;
 
-        for (int i = 0; i < attackColliders.Length; i++)
-        {
-            if (!attackColliders[i].collider.enabled) { continue; }
-
-            // player.Damage(attackColliders[i].power);
-            //float atkPow = attackColliders[i].power;
-            break;
-        }
-
-        // TODO : プレイヤーにダメージを与える処理を追加する
-        Debug.Log("Hit!!");
+        //player.Damage(GetAttackPower(attackColliders));
+        //Debug.Log("Hit!!");
     }
 
-    public void OnAttackFinished()
+    public virtual void OnAttackFinished()
     {
-        // 選択していたリストが最後まで到達した
-        if(++orderIndex >= executionOrders[executionIndex].attackExecutionOrders.Length)
-        {
-            executionIndex++;
-            orderIndex = 0;
-        }
-
-        // 実行順リストが最後まで到達した
-        if(executionIndex >= executionOrders.Length)
-        {
-            executionIndex = 0;
-        }
-
-        for (int i = 0; i < attackColliders.Length; i++)
-        {
-            attackColliders[i].collider.enabled = false;
-            attackColliders[i].atkPossibleCollider.enabled = false;
-            cooldownCounter = attackColliders[i].cooldown;
-
-            string name = executionOrders[executionIndex].attackExecutionOrders[orderIndex];
-            if (!name.Equals(attackColliders[i].attackName)) { continue; }
-
-            attackColliders[i].atkPossibleCollider.enabled = true;
-        }
-
         isHit = false;
         
         status.GoToNormalStateIfPossible();
         status.OnMove();
     }
 
-    [Serializable]
-    public class AttackColliderMap
+    // 次に使用する攻撃以外のプレイヤー侵入検査機を判定しないようにする
+    protected virtual void FinishedAttackColliders(AttackColliderMap[] atkColliders, string nextAtkName)
+    {
+        for (int i = 0; i < atkColliders.Length; i++)
+        {
+            atkColliders[i].collider.enabled = false;
+            atkColliders[i].atkPossibleCollider.enabled = false;
+
+            if (!nextAtkName.Equals(atkColliders[i].attackName)) { continue; }
+
+            atkColliders[i].atkPossibleCollider.enabled = true;
+        }
+    }
+
+    public abstract class AttackColliderMap
     {
         public Collider collider;
         public Collider atkPossibleCollider;
-        public string attackName;
         public float power = 1.0f;
-        public float cooldown = 5.0f;
-    }
-
-    [Serializable]
-    public class AttackExecutionOrder
-    {
-        public string[] attackExecutionOrders;
+        public float cooldown = 1.0f;
+        [HideInInspector] public string attackName;
     }
 }

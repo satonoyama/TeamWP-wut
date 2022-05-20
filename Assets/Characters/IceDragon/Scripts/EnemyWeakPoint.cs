@@ -1,20 +1,20 @@
-using System;
 using UnityEngine;
 
-public class EnemyWeakPoint : MonoBehaviour
+public abstract class EnemyWeakPoint : MonoBehaviour
 {
     [SerializeField] private WeakPointColliderMap[] weakPointColliders;
 
-    private bool isExecution = false;
+    protected bool isExecution = false;
 
-    // １か所でも判定が有効になっていればTrueを返す
-    public bool IsColliderEnable()
+    public bool IsExecution => isExecution;
+
+    protected bool GetIsColliderEnable(WeakPointColliderMap[] weakPoints)
     {
         bool result = false;
 
-        for(int i = 0; i < weakPointColliders.Length; i++)
+        for (int i = 0; i < weakPoints.Length; i++)
         {
-            if(weakPointColliders[i].collider.enabled)
+            if (weakPoints[i].collider.enabled)
             {
                 result = true;
                 break;
@@ -24,7 +24,39 @@ public class EnemyWeakPoint : MonoBehaviour
         return result;
     }
 
-    public bool IsExecution => isExecution;
+    protected float GetMaxHp(WeakPointColliderMap[] weakPoints)
+    {
+        float maxHp = 0.0f;
+
+        for (int i = 0; i < weakPoints.Length; i++)
+        {
+            if (!weakPoints[i].collider.enabled) { continue; }
+
+            maxHp += weakPoints[i].maxHp;
+        }
+
+        return maxHp;
+    }
+
+    protected float GetHp(WeakPointColliderMap[] weakPoints)
+    {
+        float hp = 0.0f;
+
+        for (int i = 0; i < weakPoints.Length; i++)
+        {
+            if (!weakPoints[i].collider.enabled) { continue; }
+
+            hp += weakPoints[i].hp;
+        }
+
+        return hp;
+    }
+
+    // １か所でも判定が有効になっていればTrueを返す
+    public virtual bool IsColliderEnable()
+    {
+        return GetIsColliderEnable(weakPointColliders);
+    }
 
     // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
     //
@@ -33,97 +65,104 @@ public class EnemyWeakPoint : MonoBehaviour
     // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
     // 判定が有効になっている部位の総最大HP取得
-    public float MaxHp()
+    public virtual float MaxHp()
     {
-        float maxHp = 0.0f;
-
-        for (int i = 0; i < weakPointColliders.Length; i++)
-        {
-            if (!weakPointColliders[i].collider.enabled) { continue; }
-
-            maxHp += weakPointColliders[i].maxHp;
-
-        }
-
-        return maxHp;
+        return GetMaxHp(weakPointColliders);
     }
 
     // 判定が有効になっている部位の総HP取得
-    public float Hp()
+    public virtual float Hp()
     {
-        float hp = 0.0f;
-
-        for (int i = 0; i < weakPointColliders.Length; i++)
-        {
-            if (!weakPointColliders[i].collider.enabled) { continue; }
-
-            hp += weakPointColliders[i].hp;
-
-        }
-
-        return hp;
+        return GetHp(weakPointColliders);
     }
 
     // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
     // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
-    void Start()
+    protected virtual void Start()
     {
-        for (int i = 0; i < weakPointColliders.Length; i++)
+        InitWeakPointColliders(weakPointColliders);
+    }
+
+    public void InitWeakPointColliders(WeakPointColliderMap[] weakPoints, string userName = "Body")
+    {
+        for (int i = 0; i < weakPoints.Length; i++)
         {
-            weakPointColliders[i].collider.enabled = false;
-            weakPointColliders[i].hp = weakPointColliders[i].maxHp;
+            weakPoints[i].collider.enabled = false;
+            weakPoints[i].hp = weakPoints[i].maxHp;
+            weakPoints[i].attackName = userName;
         }
+    }
+
+    public void InitWeakPointColliders(WeakPointColliderMap[] weakPoints, int i, string userName = "Body")
+    {
+        weakPoints[i].collider.enabled = false;
+        weakPoints[i].hp = weakPoints[i].maxHp;
+        weakPoints[i].attackName = userName;
     }
 
     // 特定の判定を有効にする
-    public void OnCollisionEnable(string name)
+    public virtual void OnCollisionEnable(string atkName)
     {
-        for (int i = 0; i < weakPointColliders.Length; i++)
-        {
-            if(name.Equals(weakPointColliders[i].attackName))
-            {
-                weakPointColliders[i].collider.enabled = true;
-                weakPointColliders[i].hp = weakPointColliders[i].maxHp;
-            }
-        }
+        OnWPCollisionEnable(weakPointColliders, atkName);
 
         isExecution = true;
     }
 
-    // 全ての判定を無効にする
-    public void OnCollisionEnableFinished()
+    protected void OnWPCollisionEnable(WeakPointColliderMap[] weakPoints, string atkName)
     {
-        for (int i = 0; i < weakPointColliders.Length; i++)
+        for (int i = 0; i < weakPoints.Length; i++)
         {
-            weakPointColliders[i].collider.enabled = false;
-            weakPointColliders[i].hp = 0.0f;
+            if (atkName.Equals(weakPoints[i].attackName))
+            {
+                weakPoints[i].collider.enabled = true;
+                weakPoints[i].hp = weakPoints[i].maxHp;
+            }
         }
+    }
+
+    // 全ての判定を無効にする
+    public virtual void OnCollisionEnableFinished()
+    {
+        OnWPCollisionEnableFinished(weakPointColliders);
 
         isExecution = false;
     }
 
-    public void Damage(int dmg)
+    protected void OnWPCollisionEnableFinished(WeakPointColliderMap[] weakPoints)
     {
-        for (int i = 0; i < weakPointColliders.Length; i++)
+        for (int i = 0; i < weakPoints.Length; i++)
         {
-            if (!weakPointColliders[i].collider.enabled) { continue; }
-
-            weakPointColliders[i].hp -= dmg;
-            if(weakPointColliders[i].hp > 0.0f) { continue; }
-
-            // HPが無くなった部位を無効にする
-            weakPointColliders[i].collider.enabled = false;
-            weakPointColliders[i].hp = 0.0f;
+            weakPoints[i].collider.enabled = false;
+            weakPoints[i].hp = 0.0f;
         }
     }
 
-    [Serializable]
-    public class WeakPointColliderMap
+    public virtual void Damage(float dmg)
+    {
+        OnDamage(weakPointColliders, dmg);
+    }
+
+    protected void OnDamage(WeakPointColliderMap[] weakPoints, float dmg)
+    {
+        for (int i = 0; i < weakPoints.Length; i++)
+        {
+            if (!weakPoints[i].collider.enabled) { continue; }
+
+            weakPoints[i].hp -= dmg;
+            if (weakPoints[i].hp > 0.0f) { continue; }
+
+            // HPが無くなった部位を無効にする
+            weakPoints[i].collider.enabled = false;
+            weakPoints[i].hp = 0.0f;
+        }
+    }
+
+    public abstract class WeakPointColliderMap
     {
         public Collider collider;
-        public string attackName;
         public float maxHp = 1.0f;
-        public float hp = 1.0f;
+        [HideInInspector] public float hp = 1.0f;
+        [HideInInspector] public string attackName;
     }
 }

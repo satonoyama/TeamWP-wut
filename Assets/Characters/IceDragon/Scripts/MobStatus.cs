@@ -15,7 +15,7 @@ public abstract class MobStatus : MonoBehaviour
 
     // UŒ‚‰Â”\‚©‚Ç‚¤‚©
     public bool IsAttackable => state == StateEnum.eNormal;
-
+    
     // HPŠÖŒW
     public float MaxHp => maxHp;
     public float Hp => hp;

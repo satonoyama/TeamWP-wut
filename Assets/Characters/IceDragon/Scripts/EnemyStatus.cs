@@ -8,7 +8,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(Collider))]
 public class EnemyStatus : MobStatus
 {
-    private enum ActionState
+    protected enum ActionState
     {
         eNone,
         eScream,
@@ -18,22 +18,30 @@ public class EnemyStatus : MobStatus
         eGetHit,
         eDie
     }
-    private ActionState actionState = ActionState.eNone;
-
-    private EnemyWeakPoint weakPoint;
+    protected ActionState actionState = ActionState.eNone;
     private NavMeshAgent agent;
 
     private bool isFly = false;
 
-    public bool IsScream => actionState == ActionState.eScream;
+    public bool CanAttack()
+    {
+        if(!IsAttackable ||
+           actionState == ActionState.eScream ||
+           actionState == ActionState.eAttack) { return false; }
+
+        return true;
+    }
+
     public bool CanMove => actionState == ActionState.eMove;
     public bool IsFly => isFly;
+
+    public EnemyWeakPoint GetWeakPoint { get; private set; }
 
     protected override void Start()
     {
         base.Start();
 
-        weakPoint = GetComponent<EnemyWeakPoint>();
+        GetWeakPoint = GetComponent<EnemyWeakPoint>();
         agent = GetComponent<NavMeshAgent>();
 
         // 戦闘開始時のアニメーションに遷移
@@ -47,6 +55,8 @@ public class EnemyStatus : MobStatus
 
     public void OnScream()
     {
+        OnMoveFinished();
+
         actionState = ActionState.eScream;
         animator.SetTrigger("Scream");
     }
@@ -87,15 +97,15 @@ public class EnemyStatus : MobStatus
     {
         base.Damage(damage);
 
-        if(weakPoint.IsExecution)
+        if(GetWeakPoint.IsExecution)
         {
-            weakPoint.Damage(damage);
+            GetWeakPoint.Damage(damage);
 
             // ダメージを受けた結果、弱点のHPが無くなった場合は怯む
-            if(!weakPoint.IsColliderEnable())
+            if(!GetWeakPoint.IsColliderEnable())
             {
                 OnGetHit();
-                weakPoint.OnCollisionEnableFinished();
+                GetWeakPoint.OnCollisionEnableFinished();
             }
         }
     }
@@ -103,7 +113,7 @@ public class EnemyStatus : MobStatus
     public override void GoToAttackStateIfPossible(string name = "Attack")
     {
         base.GoToAttackStateIfPossible(name);
-        weakPoint.OnCollisionEnable(name);
+        GetWeakPoint.OnCollisionEnable(name);
     }
 
     protected override void OnDie()
