@@ -5,32 +5,24 @@ using UnityEngine.AI;
 [RequireComponent(typeof(EnemyStatus))]
 public class EnemyMove : MonoBehaviour
 {
-    [SerializeField] private MovementController target;
-    private NavMeshAgent agent;
-    private EnemyStatus status;
+    [SerializeField] protected MovementController target;
+    [SerializeField] protected EnemyStatus status;
+     protected NavMeshAgent agent;
 
-    [SerializeField] private float descentSpeed = 0.01f;
-    private Vector3 moveVelocity;
+    protected Vector3 moveVelocity;
 
-    void Start()
+    protected virtual void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         status = GetComponent<EnemyStatus>();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
-        if (status.IsFly)
-        {
-            moveVelocity.y -= descentSpeed;
-
-            status.transform.position = moveVelocity;
-        }
-
         UpdateMove(target.transform.position);
     }
 
-    public void UpdateMove(Vector3 position)
+    protected virtual void UpdateMove(Vector3 position)
     {
         if(!status.CanMove) { return; }
 
