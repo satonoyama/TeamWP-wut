@@ -51,6 +51,11 @@ public abstract class EnemyAttack : MonoBehaviour
         atkColliders[i].collider.enabled = false;
         atkColliders[i].atkPossibleCollider.enabled = false;
 
+        if(atkColliders[i].trail)
+        {
+            atkColliders[i].trail.enabled = false;
+        }
+
         // 最初に使用する攻撃が持っているColliderを判定可能にする
         if (!useAtkName.Equals(atkName)) { return; }
 
@@ -60,7 +65,7 @@ public abstract class EnemyAttack : MonoBehaviour
     // 攻撃可能な状態であれば攻撃を行う
     public virtual void AttackIfPossible()
     {
-        if (status.CanAttack()) { return; }
+        if (!status.CanAttack()) { return; }
 
         status.OnMoveFinished();
         status.GoToAttackStateIfPossible();
@@ -71,6 +76,13 @@ public abstract class EnemyAttack : MonoBehaviour
     {
         if (cooldownCounter > 0.0f) { return; }
 
+        AttackIfPossible();
+    }
+
+    // 攻撃対象が体に触れるくらい至近距離にいる場合などで使用する
+    public virtual void OnForcedAttackStay(Collider collider)
+    {
+        cooldownCounter = 0.0f;
         AttackIfPossible();
     }
 
@@ -89,6 +101,16 @@ public abstract class EnemyAttack : MonoBehaviour
 
             atkColliders[i].collider.enabled = true;
             cooldownCounter = atkColliders[i].cooldown;
+
+            if(atkColliders[i].particle)
+            {
+                atkColliders[i].particle.Play();
+            }
+
+            if (atkColliders[i].trail)
+            {
+                atkColliders[i].trail.enabled = true;
+            }
         }
     }
 
@@ -107,7 +129,6 @@ public abstract class EnemyAttack : MonoBehaviour
         isHit = false;
         
         status.GoToNormalStateIfPossible();
-        status.OnMove();
     }
 
     // 次に使用する攻撃以外のプレイヤー侵入検査機を判定しないようにする
@@ -117,6 +138,16 @@ public abstract class EnemyAttack : MonoBehaviour
         {
             atkColliders[i].collider.enabled = false;
             atkColliders[i].atkPossibleCollider.enabled = false;
+
+            if (atkColliders[i].particle)
+            {
+                atkColliders[i].particle.Stop();
+            }
+
+            if (atkColliders[i].trail)
+            {
+                atkColliders[i].trail.enabled = false;
+            }
 
             if (!nextAtkName.Equals(atkColliders[i].attackName)) { continue; }
 
@@ -128,6 +159,8 @@ public abstract class EnemyAttack : MonoBehaviour
     {
         public Collider collider;
         public Collider atkPossibleCollider;
+        public ParticleSystem particle = null;
+        public TrailRenderer trail = null;
         public float power = 1.0f;
         public float cooldown = 1.0f;
         [HideInInspector] public string attackName;

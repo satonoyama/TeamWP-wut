@@ -32,9 +32,14 @@ public class IceDragonWeakPoint : EnemyWeakPoint
         }
     }
 
-    public override void OnCollisionEnable(string atkName)
+    public override void OnCollisionEnable()
     {
-        OnWPCollisionEnable(iceDragonWPColliders, atkName);
+        if (isExecution) { return; }
+
+        // égÇ®Ç§Ç∆ÇµÇƒÇ¢ÇÈçUåÇñºê›íË
+        useAtkName = attack.GetUseAtkName();
+
+        OnWPCollisionEnable(iceDragonWPColliders);
 
         isExecution = true;
     }
@@ -43,7 +48,7 @@ public class IceDragonWeakPoint : EnemyWeakPoint
     {
         OnWPCollisionEnableFinished(iceDragonWPColliders);
 
-        isExecution = true;
+        isExecution = false;
     }
 
     public override void Damage(float dmg)

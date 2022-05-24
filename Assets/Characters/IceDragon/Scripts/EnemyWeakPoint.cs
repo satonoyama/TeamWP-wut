@@ -4,6 +4,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
 {
     [SerializeField] private WeakPointColliderMap[] weakPointColliders;
 
+    protected string useAtkName = "Attack";     // ‚Æ‚è‚ ‚¦‚¸ Attack ‚ð“ü‚ê‚Ä‚¨‚­
     protected bool isExecution = false;
 
     public bool IsExecution => isExecution;
@@ -102,18 +103,18 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     }
 
     // “Á’è‚Ì”»’è‚ð—LŒø‚É‚·‚é
-    public virtual void OnCollisionEnable(string atkName)
+    public virtual void OnCollisionEnable()
     {
-        OnWPCollisionEnable(weakPointColliders, atkName);
+        OnWPCollisionEnable(weakPointColliders);
 
         isExecution = true;
     }
 
-    protected void OnWPCollisionEnable(WeakPointColliderMap[] weakPoints, string atkName)
+    protected void OnWPCollisionEnable(WeakPointColliderMap[] weakPoints)
     {
         for (int i = 0; i < weakPoints.Length; i++)
         {
-            if (atkName.Equals(weakPoints[i].attackName))
+            if (useAtkName.Equals(weakPoints[i].attackName))
             {
                 weakPoints[i].collider.enabled = true;
                 weakPoints[i].hp = weakPoints[i].maxHp;
@@ -124,6 +125,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     // ‘S‚Ä‚Ì”»’è‚ð–³Œø‚É‚·‚é
     public virtual void OnCollisionEnableFinished()
     {
+        if (!IsExecution) { return; }
+
         OnWPCollisionEnableFinished(weakPointColliders);
 
         isExecution = false;

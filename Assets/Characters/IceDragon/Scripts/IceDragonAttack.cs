@@ -13,6 +13,9 @@ public class IceDragonAttack : EnemyAttack
     }
 
     public string AttackNameList(AttackNameEnum attack) => attackNameList[(int)attack];
+  
+    // égÇ®Ç§Ç∆ÇµÇƒÇ¢ÇÈçUåÇñºéÊìæ
+    public string GetUseAtkName() => AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
 
     [SerializeField] private IceDragonAtkColliderMap[] iceDragonAtkColliders;
     [SerializeField] private AttackExecutionList[] executionList;
@@ -24,22 +27,19 @@ public class IceDragonAttack : EnemyAttack
     {
         base.Start();
 
+        // ç≈èâÇ…égópÇ∑ÇÈçUåÇñº
+        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
+
         for (int i = 0; i < iceDragonAtkColliders.Length; i++)
         {
             string atkName = AttackNameList(iceDragonAtkColliders[i].useAttackName);
-            string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
             InitAttackColliders(iceDragonAtkColliders, i, atkName, useAtkName);
         }
     }
 
-    protected override void Update()
-    {
-        base.Update();
-    }
-
     public override void AttackIfPossible()
     {
-        if (!status.IsAttackable) { return; }
+        if (!status.CanAttack()) { return; }
 
         string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
 
@@ -49,15 +49,12 @@ public class IceDragonAttack : EnemyAttack
         status.GoToAttackStateIfPossible(useAtkName);
     }
 
-    public override void OnAttackStay(Collider collider)
-    {
-        base.OnAttackStay(collider);
-    }
-
     public override void OnAttackStart()
     {
         string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
         OnAttackColliderStart(iceDragonAtkColliders, useAtkName);
+
+        status.GetWeakPoint.OnCollisionEnableFinished();
     }
 
     public override void OnHitAttack(Collider collider)

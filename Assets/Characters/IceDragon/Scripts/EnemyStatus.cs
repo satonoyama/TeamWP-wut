@@ -19,9 +19,10 @@ public class EnemyStatus : MobStatus
         eDie
     }
     protected ActionState actionState = ActionState.eNone;
-    private NavMeshAgent agent;
+    protected NavMeshAgent agent;
 
-    private bool isFly = false;
+    [SerializeField] protected float triggerHpRate = 0.0f;   // 特殊な行動を実行するHP割合
+    protected bool isExecuteSpecialBehavior = false;
 
     public bool CanAttack()
     {
@@ -33,7 +34,21 @@ public class EnemyStatus : MobStatus
     }
 
     public bool CanMove => actionState == ActionState.eMove;
-    public bool IsFly => isFly;
+
+    public bool IsExecuteSpecialBehavior => isExecuteSpecialBehavior;
+
+    // 特別な行動をするHPになっているか
+    protected bool CheckHp()
+    {
+        if (isExecuteSpecialBehavior) { return false; }
+
+        if (Hp <= (MaxHp * triggerHpRate))
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     public EnemyWeakPoint GetWeakPoint { get; private set; }
 
@@ -48,12 +63,12 @@ public class EnemyStatus : MobStatus
         OnScream();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
     }
 
-    public void OnScream()
+    public virtual void OnScream()
     {
         OnMoveFinished();
 
@@ -65,24 +80,18 @@ public class EnemyStatus : MobStatus
     {
         actionState = ActionState.eMove;
         agent.isStopped = false;
+
+        // 移動しながら攻撃をするモンスターもいるので、
+        // 攻撃可能な状態であれば弱点を有効にするようにしている
+        if (!CanAttack()) { return; }
+
+        GetWeakPoint.OnCollisionEnable();
     }
 
     public void OnMoveFinished()
     {
         actionState = ActionState.eNone;
         agent.isStopped = true;
-    }
-
-    public void OnFly()
-    {
-        isFly = true;
-        animator.SetTrigger("TakeOff");
-    }
-
-    public void OnFlyFinished()
-    {
-        isFly = false;
-        animator.SetTrigger("Landing");
     }
 
     public void OnGetHit()
@@ -108,12 +117,6 @@ public class EnemyStatus : MobStatus
                 GetWeakPoint.OnCollisionEnableFinished();
             }
         }
-    }
-
-    public override void GoToAttackStateIfPossible(string name = "Attack")
-    {
-        base.GoToAttackStateIfPossible(name);
-        GetWeakPoint.OnCollisionEnable(name);
     }
 
     protected override void OnDie()

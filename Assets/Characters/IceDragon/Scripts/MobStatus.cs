@@ -59,7 +59,7 @@ public abstract class MobStatus : MonoBehaviour
         animator.SetTrigger(name);
     }
 
-    public void GoToNormalStateIfPossible()
+    public virtual void GoToNormalStateIfPossible()
     {
         if(state == StateEnum.eDie) { return; }
         state = StateEnum.eNormal;

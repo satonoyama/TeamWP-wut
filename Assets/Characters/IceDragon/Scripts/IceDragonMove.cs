@@ -4,14 +4,9 @@ public class IceDragonMove : EnemyMove
 {
     [SerializeField] private float descentSpeed = 0.01f;
 
-    protected override void Start()
-    {
-        base.Start();
-    }
-
     protected override void Update()
     {
-        if(status.IsFly)
+        if(status.IsExecuteSpecialBehavior)
         {
             moveVelocity.y -= descentSpeed;
 
