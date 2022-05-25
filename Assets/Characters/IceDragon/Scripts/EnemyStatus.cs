@@ -3,63 +3,120 @@ using UnityEngine;
 using UnityEngine.AI;
 
 // 敵の状態管理スクリプト
+[RequireComponent(typeof(EnemyWeakPoint))]
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Collider))]
 public class EnemyStatus : MobStatus
 {
-    private NavMeshAgent agent;
+    protected enum ActionState
+    {
+        eNone,
+        eScream,
+        eIdle,
+        eMove,
+        eAttack,
+        eGetHit,
+        eDie
+    }
+    protected ActionState actionState = ActionState.eNone;
+    protected NavMeshAgent agent;
 
-    private bool canMove = false;
-    private bool isFly = false;
+    [SerializeField] protected float triggerHpRate = 0.0f;   // 特殊な行動を実行するHP割合
+    protected bool isExecuteSpecialBehavior = false;
 
-    // 死亡実験用の為、後で消す
-    private float destroyTime = 10.0f;
-    private float timeCounter = 0.0f;
+    public bool CanAttack()
+    {
+        if(!IsAttackable ||
+           actionState == ActionState.eScream ||
+           actionState == ActionState.eAttack) { return false; }
 
-    public bool CanMove => canMove;
-    public bool IsFly => isFly;
+        return true;
+    }
+
+    public bool CanMove => actionState == ActionState.eMove;
+
+    public bool IsExecuteSpecialBehavior => isExecuteSpecialBehavior;
+
+    // 特別な行動をするHPになっているか
+    protected bool CheckHp()
+    {
+        if (isExecuteSpecialBehavior) { return false; }
+
+        if (Hp <= (MaxHp * triggerHpRate))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public EnemyWeakPoint GetWeakPoint { get; private set; }
 
     protected override void Start()
     {
         base.Start();
+
+        GetWeakPoint = GetComponent<EnemyWeakPoint>();
         agent = GetComponent<NavMeshAgent>();
 
         // 戦闘開始時のアニメーションに遷移
-        //isFly = true;
-        //animator.SetTrigger("BattleStart");
+        OnScream();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
+    }
 
-        // 死亡実験
-        timeCounter += Time.deltaTime;
-        if(timeCounter >= destroyTime) { OnDie(); }
+    public virtual void OnScream()
+    {
+        OnMoveFinished();
+
+        actionState = ActionState.eScream;
+        animator.SetTrigger("Scream");
     }
 
     public void OnMove()
     {
-        canMove = true;
+        actionState = ActionState.eMove;
         agent.isStopped = false;
+
+        // 移動しながら攻撃をするモンスターもいるので、
+        // 攻撃可能な状態であれば弱点を有効にするようにしている
+        if (!CanAttack()) { return; }
+
+        GetWeakPoint.OnCollisionEnable();
     }
 
     public void OnMoveFinished()
     {
-        canMove = false;
+        actionState = ActionState.eNone;
         agent.isStopped = true;
     }
 
-    public void OnFly()
+    public void OnGetHit()
     {
-        isFly = true;
-        animator.SetTrigger("TakeOff");
+        if(actionState == ActionState.eGetHit) { return; }
+
+        actionState = ActionState.eGetHit;
+        animator.SetTrigger("GetHit");
     }
 
-    public void OnFlyFinished()
+    public override void Damage(int damage)
     {
-        isFly = false;
-        animator.SetTrigger("Landing");
+        base.Damage(damage);
+
+        if(GetWeakPoint.IsExecution)
+        {
+            GetWeakPoint.Damage(damage);
+
+            // ダメージを受けた結果、弱点のHPが無くなった場合は怯む
+            if(!GetWeakPoint.IsColliderEnable())
+            {
+                OnGetHit();
+                GetWeakPoint.OnCollisionEnableFinished();
+            }
+        }
     }
 
     protected override void OnDie()
