@@ -63,8 +63,12 @@ public class IceDragonAttack : EnemyAttack
 
         isHit = true;
 
-        // これを使ってプレイヤーにダメージを与える
-        //GetAttackPower(iceDragonAtkColliders);
+        var targetMob = collider.GetComponent<PlayerStatus>();
+
+        if (!targetMob) { return; }
+
+        targetMob.Damage(GetAttackPower(iceDragonAtkColliders));
+
         Debug.Log("Hit!!");
     }
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//[RequireComponent(typeof(PlayerStatus))]
 [RequireComponent(typeof(EnemyStatus))]
 public abstract class EnemyAttack : MonoBehaviour
 {
@@ -119,6 +120,12 @@ public abstract class EnemyAttack : MonoBehaviour
         if (isHit) { return; }
 
         isHit = true;
+
+        var targetMob = collider.GetComponent<PlayerStatus>();
+
+        if (!targetMob) { return; }
+
+        targetMob.Damage(1);
 
         //player.Damage(GetAttackPower(attackColliders));
         //Debug.Log("Hit!!");

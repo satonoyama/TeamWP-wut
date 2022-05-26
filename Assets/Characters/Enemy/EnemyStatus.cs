@@ -21,6 +21,8 @@ public class EnemyStatus : MobStatus
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
 
+    [SerializeField] protected ParticleSystem roarParticle;
+
     [SerializeField] protected float triggerHpRate = 0.0f;   // ì¡éÍÇ»çsìÆÇé¿çsÇ∑ÇÈHPäÑçá
     protected bool isExecuteSpecialBehavior = false;
 
@@ -102,7 +104,7 @@ public class EnemyStatus : MobStatus
         animator.SetTrigger("GetHit");
     }
 
-    public override void Damage(int damage)
+    public override void Damage(float damage)
     {
         base.Damage(damage);
 

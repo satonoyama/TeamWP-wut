@@ -41,7 +41,7 @@ public abstract class MobStatus : MonoBehaviour
         // TODO : ライフゲージの表示終了などを追加する
     }
 
-    public virtual void Damage(int damage)
+    public virtual void Damage(float damage)
     {
         if(state == StateEnum.eDie) { return; }
 
