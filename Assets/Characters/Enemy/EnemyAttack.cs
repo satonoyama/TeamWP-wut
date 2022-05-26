@@ -1,6 +1,5 @@
 using UnityEngine;
 
-//[RequireComponent(typeof(PlayerStatus))]
 [RequireComponent(typeof(EnemyStatus))]
 public abstract class EnemyAttack : MonoBehaviour
 {

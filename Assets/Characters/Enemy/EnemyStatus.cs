@@ -78,6 +78,20 @@ public class EnemyStatus : MobStatus
         animator.SetTrigger("Scream");
     }
 
+    public void OnRoarEffect()
+    {
+        if (!roarParticle) { return; }
+
+        roarParticle.Play();
+    }
+
+    public void OnRoarEffectFinished()
+    {
+        if (!roarParticle) { return; }
+
+        roarParticle.Stop();
+    }
+
     public void OnMove()
     {
         actionState = ActionState.eMove;
