@@ -10,7 +10,7 @@ public class EnemyMove : MonoBehaviour
     [SerializeField] protected EnemyStatus status;
      protected NavMeshAgent agent;
 
-    [SerializeField] protected LegColliderMap[] legColliders;
+    [SerializeField] protected GameObject[] legObjects;
     [SerializeField] protected ParticleSystem smoke;
     protected bool canGenerateParticle = false;
 
@@ -40,11 +40,11 @@ public class EnemyMove : MonoBehaviour
 
         if (!canGenerateParticle) { return; }
 
-        for(int i = 0; i < legColliders.Length; i++)
+        for(int i = 0; i < legObjects.Length; i++)
         {
-            var pos = legColliders[i].collider.transform.position;
+            var pos = legObjects[i].transform.position;
 
-            Debug.DrawRay(pos, rayDir);
+            Debug.DrawRay(pos, rayDir, Color.red);
 
             // _raycastHitsに、ヒットしたColliderや座標情報などが格納される。RaycastAllと
             // RaycastNonAllocは同等の機能だが、RaycastNonAllocだとメモリにゴミが残らないのでこちらを推奨
@@ -64,11 +64,5 @@ public class EnemyMove : MonoBehaviour
     public void OnCanGenerateRunSmoke()
     {
         canGenerateParticle = true;
-    }
-
-    [Serializable]
-    public class LegColliderMap
-    {
-        public Collider collider;       // 足元コライダー
     }
 }

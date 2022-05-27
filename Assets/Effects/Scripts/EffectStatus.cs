@@ -1,17 +1,26 @@
 using UnityEngine;
 
-public class EffectStatus : MonoBehaviour
+public abstract class EffectStatus : MonoBehaviour
 {
-    [SerializeField] private ParticleSystem particle = null;
+    [SerializeField] protected ParticleSystem particle = null;
+    [SerializeField] protected GameObject generatePosObject = null;
 
-    public void OnPlayParticle()
+    protected virtual void Update()
+    {
+        if(!particle.isPlaying || !generatePosObject) { return; }
+
+        var pos = generatePosObject.transform.position;
+        particle.transform.position = pos;
+    }
+
+    protected void OnPlayParticle()
     {
         if (!particle) { return; }
 
         particle.Play();
     }
 
-    public void OnStopParticle()
+    protected void OnStopParticle()
     {
         if (!particle) { return; }
 

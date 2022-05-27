@@ -102,10 +102,10 @@ public abstract class EnemyAttack : MonoBehaviour
             atkColliders[i].collider.enabled = true;
             cooldownCounter = atkColliders[i].cooldown;
 
-            if(atkColliders[i].particle)
-            {
-                atkColliders[i].particle.Play();
-            }
+            //if(atkColliders[i].particle)
+            //{
+            //    atkColliders[i].particle.Play();
+            //}
 
             if (atkColliders[i].trail)
             {
@@ -125,9 +125,6 @@ public abstract class EnemyAttack : MonoBehaviour
         if (!targetMob) { return; }
 
         targetMob.Damage(1);
-
-        //player.Damage(GetAttackPower(attackColliders));
-        //Debug.Log("Hit!!");
     }
 
     public virtual void OnAttackFinished()
@@ -145,10 +142,10 @@ public abstract class EnemyAttack : MonoBehaviour
             atkColliders[i].collider.enabled = false;
             atkColliders[i].atkPossibleCollider.enabled = false;
 
-            if (atkColliders[i].particle)
-            {
-                atkColliders[i].particle.Stop();
-            }
+            //if (atkColliders[i].particle)
+            //{
+            //    atkColliders[i].particle.Stop();
+            //}
 
             if (atkColliders[i].trail)
             {
@@ -165,7 +162,7 @@ public abstract class EnemyAttack : MonoBehaviour
     {
         public Collider collider;
         public Collider atkPossibleCollider;
-        public ParticleSystem particle = null;
+        //public ParticleSystem particle = null;
         public TrailRenderer trail = null;
         public float power = 1.0f;
         public float cooldown = 1.0f;

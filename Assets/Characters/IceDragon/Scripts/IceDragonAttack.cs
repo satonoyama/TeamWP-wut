@@ -43,8 +43,6 @@ public class IceDragonAttack : EnemyAttack
 
         string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
 
-        Debug.Log(useAtkName + "攻撃を実行！！");
-
         status.OnMoveFinished();
         status.GoToAttackStateIfPossible(useAtkName);
     }
@@ -68,8 +66,6 @@ public class IceDragonAttack : EnemyAttack
         if (!targetMob) { return; }
 
         targetMob.Damage(GetAttackPower(iceDragonAtkColliders));
-
-        Debug.Log("Hit!!");
     }
 
     public override void OnAttackFinished()
@@ -80,8 +76,6 @@ public class IceDragonAttack : EnemyAttack
             atkListIndex = 0;
 
             executionIndex = Random.Range(0, executionList.Length);
-
-            Debug.Log(executionIndex + "番目のリストが選択されました。");
         }
 
         string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);

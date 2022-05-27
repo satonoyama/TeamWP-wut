@@ -114505,6 +114505,13 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0.96666664
+    functionName: OnPlayBreathEffect
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 2.5
     functionName: OnMoveFinished
     data: 
@@ -114521,6 +114528,13 @@ AnimationClip:
     messageOptions: 0
   - time: 2.6
     functionName: OnAttackFinished
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 2.6
+    functionName: OnStopBreathEffect
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

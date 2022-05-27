@@ -21,8 +21,6 @@ public class EnemyStatus : MobStatus
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
 
-    [SerializeField] protected ParticleSystem roarParticle;
-
     [SerializeField] protected float triggerHpRate = 0.0f;   // ì¡éÍÇ»çsìÆÇé¿çsÇ∑ÇÈHPäÑçá
     protected bool isExecuteSpecialBehavior = false;
 
@@ -76,20 +74,6 @@ public class EnemyStatus : MobStatus
 
         actionState = ActionState.eScream;
         animator.SetTrigger("Scream");
-    }
-
-    public void OnRoarEffect()
-    {
-        if (!roarParticle) { return; }
-
-        roarParticle.Play();
-    }
-
-    public void OnRoarEffectFinished()
-    {
-        if (!roarParticle) { return; }
-
-        roarParticle.Stop();
     }
 
     public void OnMove()

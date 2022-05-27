@@ -14,8 +14,6 @@ public class PlayerStatus : MobStatus
         if(state == StateEnum.eDie) { return; }
 
         //base.OnDie();
-
-        Debug.Log("‚â‚ç‚ê‚½...");
     }
 
     public override void Damage(float damage)
