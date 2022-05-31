@@ -6,6 +6,11 @@ public class IceDragonStatus : EnemyStatus
     protected override void Update()
     {
         base.Update();
+
+        if(--hp <= 0.0f)
+        {
+            OnDie();
+        }
     }
 
     public override void OnScream()

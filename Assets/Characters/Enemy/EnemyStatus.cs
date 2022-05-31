@@ -127,7 +127,7 @@ public class EnemyStatus : MobStatus
 
         // TODO : ‚ ‚Æ‚ÅÁ–Å‚³‚¹‚é‚Æ‚«‚ÉH•v‚ğ“ü‚ê‚é
         //        ¡‚Í‚Æ‚è‚ ‚¦‚¸A‚T•bŒã‚ÉÁ‚·‚¾‚¯‚É‚µ‚Ä‚¢‚é
-        StartCoroutine(DestroyCoroutine());
+        //StartCoroutine(DestroyCoroutine());
     }
 
     private IEnumerator DestroyCoroutine()
