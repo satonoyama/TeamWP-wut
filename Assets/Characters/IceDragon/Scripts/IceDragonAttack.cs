@@ -49,17 +49,15 @@ public class IceDragonAttack : EnemyAttack
 
     public override void OnAttackStart()
     {
+        base.OnAttackStart();
+
         string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
         OnAttackColliderStart(iceDragonAtkColliders, useAtkName);
-
-        status.GetWeakPoint.OnCollisionEnableFinished();
     }
 
     public override void OnHitAttack(Collider collider)
     {
-        if (isHit) { return; }
-
-        isHit = true;
+        base.OnHitAttack(collider);
 
         var targetMob = collider.GetComponent<PlayerStatus>();
 
@@ -85,7 +83,7 @@ public class IceDragonAttack : EnemyAttack
     }
 
     [Serializable]
-    public class IceDragonAtkColliderMap : AttackColliderMap
+    public class IceDragonAtkColliderMap : EnemyAtkColliderMap
     {
         public AttackNameEnum useAttackName;
     }

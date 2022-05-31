@@ -56,6 +56,8 @@ public abstract class MobStatus : MonoBehaviour
         if(!IsAttackable) { return; }
 
         state = StateEnum.eAttack;
+
+        if (name.Length == 0) { return; }
         animator.SetTrigger(name);
     }
 

@@ -1,22 +1,14 @@
 using UnityEngine;
 
 [RequireComponent(typeof(EnemyStatus))]
-public abstract class EnemyAttack : MonoBehaviour
+public abstract class EnemyAttack : MobAttack
 {
-    [SerializeField] private AttackColliderMap[] attackColliders;
     [SerializeField] protected EnemyStatus status;
 
     protected int executionIndex = 0;     // 攻撃実行リストのインデックス
     protected int atkListIndex = 0;       // 実行リストのインデックス
-    [SerializeField] protected float cooldownCounter = 0.0f;
-    protected bool isHit = false;
 
-    protected virtual void SetAttackName(AttackColliderMap[] atkColliders, int i, string name)
-    {
-        attackColliders[i].attackName = name;
-    }
-
-    protected virtual float GetAttackPower(AttackColliderMap[] atkCollisions)
+    protected virtual float GetAttackPower(EnemyAtkColliderMap[] atkCollisions)
     {
         var atkPow = 0.0f;
 
@@ -31,30 +23,25 @@ public abstract class EnemyAttack : MonoBehaviour
         return atkPow;
     }
 
-    protected virtual void Start()
+    protected override void Start()
     {
-        cooldownCounter = 0.0f;
+        base.Start();
 
-        status = GetComponent<EnemyStatus>();
+        status = GetComponentInChildren<EnemyStatus>();
     }
 
-    protected virtual void Update()
+    protected override void Update()
     {
         if(!status.CanAttack()) { return; }
 
-        cooldownCounter -= Time.deltaTime;
+        CooldownCount();
     }
 
-    protected virtual void InitAttackColliders(AttackColliderMap[] atkColliders, int i, string atkName, string useAtkName = "Attack")
+    protected virtual void InitAttackColliders(EnemyAtkColliderMap[] atkColliders, int i, string atkName, string useAtkName = "Attack")
     {
         atkColliders[i].attackName = atkName;
         atkColliders[i].collider.enabled = false;
         atkColliders[i].atkPossibleCollider.enabled = false;
-
-        if(atkColliders[i].trail)
-        {
-            atkColliders[i].trail.enabled = false;
-        }
 
         // 最初に使用する攻撃が持っているColliderを判定可能にする
         if (!useAtkName.Equals(atkName)) { return; }
@@ -86,14 +73,12 @@ public abstract class EnemyAttack : MonoBehaviour
         AttackIfPossible();
     }
 
-    public virtual void OnAttackStart()
+    public override void OnAttackStart()
     {
-        OnAttackColliderStart(attackColliders);
-
         status.GetWeakPoint.OnCollisionEnableFinished();
     }
 
-    protected virtual void OnAttackColliderStart(AttackColliderMap[] atkColliders, string useAtkName = "Attack")
+    protected virtual void OnAttackColliderStart(EnemyAtkColliderMap[] atkColliders, string useAtkName = "Attack")
     {
         for (int i = 0; i < atkColliders.Length; i++)
         {
@@ -101,56 +86,23 @@ public abstract class EnemyAttack : MonoBehaviour
 
             atkColliders[i].collider.enabled = true;
             cooldownCounter = atkColliders[i].cooldown;
-
-            //if(atkColliders[i].particle)
-            //{
-            //    atkColliders[i].particle.Play();
-            //}
-
-            if (atkColliders[i].trail)
-            {
-                atkColliders[i].trail.enabled = true;
-            }
         }
     }
 
-    public virtual void OnHitAttack(Collider collider)
+    public override void OnAttackFinished()
     {
-        if (isHit) { return; }
+        base.OnAttackFinished();
 
-        isHit = true;
-
-        var targetMob = collider.GetComponent<PlayerStatus>();
-
-        if (!targetMob) { return; }
-
-        targetMob.Damage(1);
-    }
-
-    public virtual void OnAttackFinished()
-    {
-        isHit = false;
-        
         status.GoToNormalStateIfPossible();
     }
 
-    // 次に使用する攻撃以外のプレイヤー侵入検査機を判定しないようにする
-    protected virtual void FinishedAttackColliders(AttackColliderMap[] atkColliders, string nextAtkName)
+    // 次に使用する攻撃以外のプレイヤー侵入判定器を判定しないようにする
+    protected virtual void FinishedAttackColliders(EnemyAtkColliderMap[] atkColliders, string nextAtkName)
     {
         for (int i = 0; i < atkColliders.Length; i++)
         {
             atkColliders[i].collider.enabled = false;
             atkColliders[i].atkPossibleCollider.enabled = false;
-
-            //if (atkColliders[i].particle)
-            //{
-            //    atkColliders[i].particle.Stop();
-            //}
-
-            if (atkColliders[i].trail)
-            {
-                atkColliders[i].trail.enabled = false;
-            }
 
             if (!nextAtkName.Equals(atkColliders[i].attackName)) { continue; }
 
@@ -158,14 +110,8 @@ public abstract class EnemyAttack : MonoBehaviour
         }
     }
 
-    public abstract class AttackColliderMap
+    public abstract class EnemyAtkColliderMap : AttackColliderMap
     {
-        public Collider collider;
         public Collider atkPossibleCollider;
-        //public ParticleSystem particle = null;
-        public TrailRenderer trail = null;
-        public float power = 1.0f;
-        public float cooldown = 1.0f;
-        [HideInInspector] public string attackName;
     }
 }

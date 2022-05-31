@@ -114499,14 +114499,14 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.96666664
-    functionName: OnAttackStart
+    functionName: OnPlayParticle
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 2
     messageOptions: 0
-  - time: 0.96666664
-    functionName: OnPlayBreathEffect
+  - time: 1.1666666
+    functionName: OnAttackStart
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -114526,17 +114526,17 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2.6
+  - time: 2.7666667
     functionName: OnAttackFinished
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2.6
-    functionName: OnStopBreathEffect
+  - time: 2.8333333
+    functionName: OnStopParticle
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 2
     messageOptions: 0

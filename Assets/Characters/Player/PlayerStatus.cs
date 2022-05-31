@@ -7,6 +7,8 @@ public class PlayerStatus : MobStatus
     protected override void Start()
     {
         base.Start();
+
+        // TODO : Ç»ÇÒÇ©í«â¡Ç∑ÇÈÇ©Ç‡ÅH
     }
 
     protected override void OnDie()
