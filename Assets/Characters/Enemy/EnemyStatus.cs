@@ -63,7 +63,7 @@ public class EnemyStatus : MobStatus
         OnScream();
     }
 
-    protected virtual void Update()
+    protected override void Update()
     {
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
     }

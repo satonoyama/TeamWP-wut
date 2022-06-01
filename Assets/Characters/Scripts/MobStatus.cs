@@ -20,7 +20,7 @@ public abstract class MobStatus : MonoBehaviour
     public float MaxHp => maxHp;
     public float Hp => hp;
 
-    [SerializeField] private float maxHp = 100;
+    [SerializeField] protected float maxHp = 100;
     protected Animator animator;
     protected StateEnum state = StateEnum.eNormal;
     protected float hp;
@@ -30,6 +30,8 @@ public abstract class MobStatus : MonoBehaviour
         hp = maxHp;
         animator = GetComponentInChildren<Animator>();
     }
+
+    protected virtual void Update() {}
 
     protected virtual void OnDie()
     {

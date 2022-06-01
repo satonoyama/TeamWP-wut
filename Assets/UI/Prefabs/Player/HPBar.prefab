@@ -590,8 +590,7 @@ GameObject:
   - component: {fileID: 5221665298274992712}
   - component: {fileID: 5221665298274992716}
   - component: {fileID: 5221665298274992715}
-  - component: {fileID: 5221665298274992717}
-  - component: {fileID: 5221665298274992718}
+  - component: {fileID: 7862609346002551804}
   m_Layer: 5
   m_Name: Filler
   m_TagString: Untagged
@@ -657,7 +656,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5221665298274992717
+--- !u!114 &7862609346002551804
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -666,25 +665,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 5221665298274992759}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e86121da8cf4b634fb2e2d6566b50fbc, type: 3}
+  m_Script: {fileID: 11500000, guid: 70cb2e94c4ea6344c8513f9aca38511c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxGauge: 100
-  currentGauge: 0
-  fillerSystem: {fileID: 5221665298274992759}
---- !u!114 &5221665298274992718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5221665298274992759}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bdd2851f5846a745a2b61c1012b79ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  status: {fileID: 0}
   image: {fileID: 5221665298274992715}
+  maxGauge: 0
 --- !u!1 &5221665298746451155
 GameObject:
   m_ObjectHideFlags: 0

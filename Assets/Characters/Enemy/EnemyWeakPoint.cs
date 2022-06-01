@@ -136,6 +136,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     {
         for (int i = 0; i < weakPoints.Length; i++)
         {
+            if (!weakPoints[i].collider.enabled) { continue; }
+
             weakPoints[i].collider.enabled = false;
             weakPoints[i].hp = 0.0f;
         }

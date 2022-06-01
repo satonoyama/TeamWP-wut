@@ -83,6 +83,7 @@ public class PlayerAttack : MobAttack
     public class MagicColliderMap : AttackColliderMap
     {
         public MagicID id;
+        public float useSpValue = 1.0f;
         [HideInInspector] public float cooldonwCount = 0.0f;
         [HideInInspector] public bool canDo = true;
     }

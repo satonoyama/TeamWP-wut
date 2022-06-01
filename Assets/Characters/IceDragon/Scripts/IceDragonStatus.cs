@@ -7,7 +7,7 @@ public class IceDragonStatus : EnemyStatus
     {
         base.Update();
 
-        if(--hp <= 0.0f)
+        if (--hp <= 0.0f)
         {
             OnDie();
         }
