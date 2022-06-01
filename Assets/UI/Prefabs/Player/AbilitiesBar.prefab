@@ -92,7 +92,7 @@ MonoBehaviour:
   image: {fileID: 4668745612500058044}
   baseImage: {fileID: 4668745613140543635}
   text: {fileID: 4668745614447506036}
-  max: 30
+  maxGauge: 30
 --- !u!1 &4668745612606529337
 GameObject:
   m_ObjectHideFlags: 0
@@ -588,7 +588,7 @@ MonoBehaviour:
   image: {fileID: 4668745612816199605}
   baseImage: {fileID: 4668745613338683948}
   text: {fileID: 4668745612768039926}
-  max: 45
+  maxGauge: 45
 --- !u!1 &4668745612835280964
 GameObject:
   m_ObjectHideFlags: 0
@@ -1065,7 +1065,7 @@ MonoBehaviour:
   image: {fileID: 4668745613016366967}
   baseImage: {fileID: 4668745613397704224}
   text: {fileID: 4668745612734531538}
-  max: 10
+  maxGauge: 30
 --- !u!1 &4668745613070478131
 GameObject:
   m_ObjectHideFlags: 0
@@ -1783,7 +1783,7 @@ MonoBehaviour:
   image: {fileID: 4668745613473127740}
   baseImage: {fileID: 4668745614554984920}
   text: {fileID: 4668745613907021395}
-  max: 0
+  maxGauge: 0
 --- !u!1 &4668745613590530950
 GameObject:
   m_ObjectHideFlags: 0

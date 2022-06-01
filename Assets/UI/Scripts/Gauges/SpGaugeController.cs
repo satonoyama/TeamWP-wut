@@ -6,8 +6,6 @@ public class SpGaugeController : FillerController
 
     private void Start()
     {
-        maxGauge = player.MaxSp;
-        currentGauge = maxGauge;
     }
 
     private void Update()

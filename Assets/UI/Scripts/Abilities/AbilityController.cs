@@ -6,11 +6,11 @@ public class AbilityController : FillerController
     [SerializeField] private Image baseImage;
     [SerializeField] private Text text;
 
-    [SerializeField] private float max;
+    [SerializeField] private float maxGauge = 0.0f;
+    private float currentGauge = 0.0f;
 
     private void Start()
     {
-        maxGauge = max;
         currentGauge = maxGauge;
     }
 

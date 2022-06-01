@@ -6,8 +6,6 @@ public class CancelGaugeController : FillerController
 
     private void Start()
     {
-        maxGauge = weakPoint.MaxHp();
-        currentGauge = maxGauge;
     }
 
     private void Update()
