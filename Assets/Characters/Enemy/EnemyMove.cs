@@ -46,8 +46,6 @@ public class EnemyMove : MonoBehaviour
 
             Debug.DrawRay(pos, rayDir, Color.red);
 
-            // _raycastHitsに、ヒットしたColliderや座標情報などが格納される。RaycastAllと
-            // RaycastNonAllocは同等の機能だが、RaycastNonAllocだとメモリにゴミが残らないのでこちらを推奨
             int hitCount = Physics.RaycastNonAlloc(pos, rayDir, _raycastHits, rayDist, raycastLayerMask);
 
             // 地面に触れてない場合は砂埃を発生させない

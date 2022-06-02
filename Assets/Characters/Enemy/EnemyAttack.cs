@@ -4,6 +4,7 @@ using UnityEngine;
 public abstract class EnemyAttack : MobAttack
 {
     [SerializeField] protected EnemyStatus status;
+    [SerializeField] protected float cooldownCounter = 0.0f; // ( 確認用 )後でinspectorからいじれなくする
 
     protected int executionIndex = 0;     // 攻撃実行リストのインデックス
     protected int atkListIndex = 0;       // 実行リストのインデックス
@@ -47,6 +48,13 @@ public abstract class EnemyAttack : MobAttack
         if (!useAtkName.Equals(atkName)) { return; }
 
         atkColliders[i].atkPossibleCollider.enabled = true;
+    }
+
+    protected virtual void CooldownCount()
+    {
+        if (cooldownCounter < 0.0f) { return; }
+
+        cooldownCounter -= Time.deltaTime;
     }
 
     // 攻撃可能な状態であれば攻撃を行う
@@ -113,5 +121,6 @@ public abstract class EnemyAttack : MobAttack
     public abstract class EnemyAtkColliderMap : AttackColliderMap
     {
         public Collider atkPossibleCollider;
+        public float cooldown = 1.0f;
     }
 }

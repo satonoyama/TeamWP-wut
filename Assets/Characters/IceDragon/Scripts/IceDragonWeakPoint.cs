@@ -26,7 +26,7 @@ public class IceDragonWeakPoint : EnemyWeakPoint
     {
         attack = GetComponent<IceDragonAttack>();
 
-        for(int i = 0; i < iceDragonWPColliders.Length; i++)
+        for (int i = 0; i < iceDragonWPColliders.Length; i++)
         {
             InitWeakPointColliders(iceDragonWPColliders, i, attack.AttackNameList(iceDragonWPColliders[i].userAttackName));
         }

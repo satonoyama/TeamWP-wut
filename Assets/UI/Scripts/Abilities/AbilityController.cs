@@ -9,6 +9,9 @@ public class AbilityController : FillerController
     [SerializeField] private float maxGauge = 0.0f;
     private float currentGauge = 0.0f;
 
+    // クールタイムが有効になっているかどうか( falseでスキル使用可能 )
+    public bool IsCooltimeStop => isStop;
+
     private void Start()
     {
         currentGauge = maxGauge;
@@ -36,7 +39,17 @@ public class AbilityController : FillerController
 
             currentGauge = 0.0f;
             isStop = true;
-            return;
         }
+    }
+
+    public void OnActive()
+    {
+        text.gameObject.SetActive(true);
+        baseImage.gameObject.SetActive(true);
+
+        isStop = false;
+
+        currentGauge = maxGauge;
+        text.text = ((int)currentGauge).ToString();
     }
 }

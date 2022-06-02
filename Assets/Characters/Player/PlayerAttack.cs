@@ -13,6 +13,9 @@ public class PlayerAttack : MobAttack
     [SerializeField] private MagicColliderMap[] magics;
     [SerializeField] private PlayerStatus status;
 
+    // 今のSP量から使用量分引いてもSPが足りているかどうか
+    public bool CheckSP => (status.Sp - magics[(int)nowUseID].useSpValue) >= magics[(int)nowUseID].useSpValue;
+
     protected override void Start()
     {
         base.Start();
@@ -25,21 +28,17 @@ public class PlayerAttack : MobAttack
         CooldownCount();
     }
 
-    protected override void CooldownCount()
+    // ※ 扱い方が適切ではないかもしれないが、とりあえず使っている
+    private void CooldownCount()
     {
         for(int i = 0; i < magics.Length; i++)
         {
             if(magics[i].canDo) { continue; }
 
-            magics[i].cooldonwCount -= Time.deltaTime;
-
-            // TODO : UIに値を渡すかも
-
-            if(magics[i].cooldonwCount <= 0.0f)
+            // 待ちアイコンではない
+            if(!magics[i].ability.IsCooltimeStop)
             {
                 magics[i].canDo = true;
-
-                // TODO : スキルにも対応するなら、ここでUIを使用可能状態に
             }
         }
     }
@@ -50,7 +49,11 @@ public class PlayerAttack : MobAttack
 
         nowUseID = id;
 
+        if (!CheckSP) { return; }
+
         magics[(int)id].collider.enabled = true;
+
+        magics[(int)id].ability.OnActive();
 
         status.GoToAttackStateIfPossible("");
     }
@@ -74,8 +77,6 @@ public class PlayerAttack : MobAttack
 
         magics[(int)nowUseID].canDo = false;
 
-        magics[(int)nowUseID].cooldonwCount = magics[(int)nowUseID].cooldown;
-
         status.GoToNormalStateIfPossible();
     }
 
@@ -84,7 +85,7 @@ public class PlayerAttack : MobAttack
     {
         public MagicID id;
         public float useSpValue = 1.0f;
-        [HideInInspector] public float cooldonwCount = 0.0f;
+        public AbilityController ability = null;
         [HideInInspector] public bool canDo = true;
     }
 }

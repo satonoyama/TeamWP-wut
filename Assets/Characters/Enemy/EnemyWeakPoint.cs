@@ -92,6 +92,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
             weakPoints[i].collider.enabled = false;
             weakPoints[i].hp = weakPoints[i].maxHp;
             weakPoints[i].attackName = userName;
+            WeakPointContainer.Instance.Add(weakPoints[i].collider);
         }
     }
 
@@ -100,6 +101,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         weakPoints[i].collider.enabled = false;
         weakPoints[i].hp = weakPoints[i].maxHp;
         weakPoints[i].attackName = userName;
+        WeakPointContainer.Instance.Add(weakPoints[i].collider);
     }
 
     // “Á’è‚Ì”»’è‚ð—LŒø‚É‚·‚é
@@ -118,6 +120,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
             {
                 weakPoints[i].collider.enabled = true;
                 weakPoints[i].hp = weakPoints[i].maxHp;
+                WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].collider).OnActive();
             }
         }
     }
@@ -138,9 +141,17 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         {
             if (!weakPoints[i].collider.enabled) { continue; }
 
-            weakPoints[i].collider.enabled = false;
-            weakPoints[i].hp = 0.0f;
+            OnWeakPointFinished(weakPoints, i);
         }
+    }
+
+    protected void OnWeakPointFinished(WeakPointColliderMap[] weakPoints, int i)
+    {
+        weakPoints[i].collider.enabled = false;
+
+        weakPoints[i].hp = 0.0f;
+
+        WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].collider).OnActiveFinished();
     }
 
     public virtual void Damage(float dmg)
@@ -158,8 +169,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
             if (weakPoints[i].hp > 0.0f) { continue; }
 
             // HP‚ª–³‚­‚È‚Á‚½•”ˆÊ‚ð–³Œø‚É‚·‚é
-            weakPoints[i].collider.enabled = false;
-            weakPoints[i].hp = 0.0f;
+            OnWeakPointFinished(weakPoints, i);
         }
     }
 
