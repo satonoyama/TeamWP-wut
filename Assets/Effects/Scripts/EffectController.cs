@@ -56,11 +56,10 @@ public class EffectController : MonoBehaviour
 
     public void OnStopAllParticle()
     {
-        if (!effects[(int)effectID].particle ||
-            !effects[(int)effectID].particle.isPlaying) { return; }
-
         for(int i = 0; i < effects.Length; i++)
         {
+            if (!effects[i].particle.isPlaying) { continue; }
+
             effects[i].particle.Stop();
         }
 

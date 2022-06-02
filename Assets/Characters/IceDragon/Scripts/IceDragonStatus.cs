@@ -1,3 +1,4 @@
+using UnityEngine;
 
 public class IceDragonStatus : EnemyStatus
 {
@@ -7,10 +8,10 @@ public class IceDragonStatus : EnemyStatus
     {
         base.Update();
 
-        //if (--hp <= 0.0f)
-        //{
-        //    OnDie();
-        //}
+        if ((hp -= Time.deltaTime) <= 0.0f)
+        {
+            OnDie();
+        }
     }
 
     public override void OnScream()
