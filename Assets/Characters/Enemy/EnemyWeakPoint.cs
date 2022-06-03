@@ -92,7 +92,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
             weakPoints[i].collider.enabled = false;
             weakPoints[i].hp = weakPoints[i].maxHp;
             weakPoints[i].attackName = userName;
-            WeakPointContainer.Instance.Add(weakPoints[i].collider);
+            WeakPointContainer.Instance.Add(weakPoints[i].pointPosCollider);
         }
     }
 
@@ -101,7 +101,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         weakPoints[i].collider.enabled = false;
         weakPoints[i].hp = weakPoints[i].maxHp;
         weakPoints[i].attackName = userName;
-//        WeakPointContainer.Instance.Add(weakPoints[i].collider);
+        WeakPointContainer.Instance.Add(weakPoints[i].pointPosCollider);
     }
 
     // “Á’è‚Ì”»’è‚ð—LŒø‚É‚·‚é
@@ -121,8 +121,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
                 weakPoints[i].collider.enabled = true;
                 weakPoints[i].hp = weakPoints[i].maxHp;
 
-                if (!WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].collider)) { continue; }
-                WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].collider).OnActive();
+                if (!WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider)) { continue; }
+                WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider).OnActive();
             }
         }
     }
@@ -153,8 +153,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
 
         weakPoints[i].hp = 0.0f;
 
-        if (!WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].collider)) { return; }
-        WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].collider).OnActiveFinished();
+        if (!WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider)) { return; }
+        WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider).OnActiveFinished();
     }
 
     public virtual void Damage(float dmg)
@@ -179,6 +179,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     public abstract class WeakPointColliderMap
     {
         public Collider collider;
+        public Collider pointPosCollider;
         public float maxHp = 1.0f;
         [HideInInspector] public float hp = 1.0f;
         [HideInInspector] public string attackName;

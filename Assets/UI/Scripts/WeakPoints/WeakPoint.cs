@@ -5,31 +5,32 @@ public class WeakPoint : MonoBehaviour
 {
     [SerializeField] private Image image;
 
-    private RectTransform _parentRecTransform;
+    private RectTransform parentRecTransform;
     private Camera _camera;
     private Collider point;
 
-    [SerializeField] private Vector3 initScale = new();
+    [SerializeField] private Vector3 initScale = Vector3.one;
     [SerializeField] private float scaleDownVal = 0.0f;
     private Vector3 scale = new();
     private bool isScaleDown = false;
+    private bool isActive = false;
 
     public void Initialize(RectTransform parentRectTransform, Camera camera, Collider collider)
     {
-        _parentRecTransform = parentRectTransform;
+        parentRecTransform = parentRectTransform;
         _camera = camera;
         point = collider;
 
         point.enabled = false;
 
-        image.gameObject.SetActive(true);
+        image.enabled = false;
 
         scale = initScale;
     }
 
     private void Update()
     {
-        if (!image.gameObject.activeSelf) { return; }
+        if (!isActive) { return; }
 
         ScaleDown();
 
@@ -44,8 +45,6 @@ public class WeakPoint : MonoBehaviour
 
         if(scale.sqrMagnitude <= Vector3.one.sqrMagnitude)
         {
-            Debug.Log(scale.sqrMagnitude);
-
             scale = Vector3.one;
 
             isScaleDown = false;
@@ -58,14 +57,24 @@ public class WeakPoint : MonoBehaviour
     {
         var screenPoint = _camera.WorldToScreenPoint(point.transform.position);
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(_parentRecTransform, screenPoint, null, out Vector2 localPoint);
+        var cameraDir = _camera.transform.forward;
+
+        var targetDir = point.transform.position - _camera.transform.position;
+
+        var isFront = Vector3.Dot(targetDir, cameraDir) > 0;
+
+        image.enabled = isFront;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRecTransform, screenPoint, null, out Vector2 localPoint);
 
         image.gameObject.transform.localPosition = localPoint;
     }
 
     public void OnActive()
     {
-        image.gameObject.SetActive(true);
+        isActive = true;
+
+        image.enabled = true;
 
         scale = initScale;
 
@@ -74,7 +83,9 @@ public class WeakPoint : MonoBehaviour
 
     public void OnActiveFinished()
     {
-        image.gameObject.SetActive(false);
+        isActive = false;
+
+        image.enabled = false;
 
         isScaleDown = false;
     }
