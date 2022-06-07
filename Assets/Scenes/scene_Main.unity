@@ -1821,13 +1821,13 @@ MonoBehaviour:
     power: 10
     attackName: 
     atkPossibleCollider: {fileID: 132252772}
-    cooldown: 3
+    cooldown: 2
     useAttackName: 2
   - collider: {fileID: 277744140}
     power: 20
     attackName: 
     atkPossibleCollider: {fileID: 1388706576}
-    cooldown: 5
+    cooldown: 3
     useAttackName: 3
   executionList:
   - attackList: 00000000010000000200000003000000
@@ -1879,6 +1879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 10
+  target: {fileID: 955921227}
   triggerHpRate: 0
 --- !u!114 &181430759
 MonoBehaviour:
@@ -1892,7 +1893,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74a630f71d94bbf4e814c28cdac10b94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 955921227}
   status: {fileID: 181430758}
   legObjects:
   - {fileID: 1857968034}

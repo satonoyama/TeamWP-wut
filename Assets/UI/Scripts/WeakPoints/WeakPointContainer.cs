@@ -46,4 +46,14 @@ public class WeakPointContainer : MonoBehaviour
         Destroy(weakPointMap[collider].gameObject);
         weakPointMap.Remove(collider);
     }
+
+    public void AllRemove()
+    {
+        foreach(WeakPoint weakPoint in weakPointMap.Values)
+        {
+            Destroy(weakPoint.gameObject);
+        }
+
+        weakPointMap.Clear();
+    }
 }

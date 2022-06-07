@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,8 +20,13 @@ public class EnemyStatus : MobStatus
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
 
+    [SerializeField] protected MovementController target;
+    [SerializeField] protected float distLength = 0.0f;
+
     [SerializeField] protected float triggerHpRate = 0.0f;   // 特殊な行動を実行するHP割合
     protected bool isExecuteSpecialBehavior = false;
+
+    public MovementController GetTarget => target;
 
     public bool CanAttack()
     {
@@ -125,14 +129,8 @@ public class EnemyStatus : MobStatus
 
         OnMoveFinished();
 
-        // TODO : あとで消滅させるときに工夫を入れる
-        //        今はとりあえず、５秒後に消すだけにしている
-        //StartCoroutine(DestroyCoroutine());
-    }
+        WeakPointContainer.Instance.AllRemove();
 
-    private IEnumerator DestroyCoroutine()
-    {
-        yield return new WaitForSeconds(5);
-        Destroy(gameObject);
+        // TODO : Tansition to Clear Scene
     }
 }
