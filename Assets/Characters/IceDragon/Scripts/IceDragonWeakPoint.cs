@@ -37,7 +37,7 @@ public class IceDragonWeakPoint : EnemyWeakPoint
         if (isExecution) { return; }
 
         // g‚¨‚¤‚Æ‚µ‚Ä‚¢‚éUŒ‚–¼İ’è
-        useAtkName = attack.GetUseAtkName();
+        useAtkName = attack.GetUseAtkName;
 
         OnWPCollisionEnable(iceDragonWPColliders);
 

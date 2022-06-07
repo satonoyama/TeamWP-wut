@@ -21,8 +21,8 @@ public class EnemyMove : MonoBehaviour
 
     protected virtual void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        status = GetComponent<EnemyStatus>();
+        agent = GetComponentInChildren<NavMeshAgent>();
+        status = GetComponentInChildren<EnemyStatus>();
     }
 
     protected virtual void Update()

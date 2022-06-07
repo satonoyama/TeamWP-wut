@@ -52,7 +52,5 @@ public class PlayerStatus : MobStatus
     public override void Damage(float damage)
     {
         base.Damage(damage);
-
-        //Debug.Log("HP : " + Hp);
     }
 }

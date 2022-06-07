@@ -29,7 +29,7 @@ public class WeakPointContainer : MonoBehaviour
     {
         if (instance) throw new Exception("WeakPoinContainer instance already exists.");
         instance = this;
-        rectTransform = GetComponent<RectTransform>();
+        rectTransform = GetComponentInChildren<RectTransform>();
     }
 
     public void Add(Collider collider)

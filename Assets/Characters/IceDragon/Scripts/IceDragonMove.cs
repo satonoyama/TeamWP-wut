@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class IceDragonMove : EnemyMove
 {
-    [SerializeField] private float descentSpeed = 0.01f;
+    //[SerializeField] private float descentSpeed = 0.01f;
 
     //protected override void Update()
     //{

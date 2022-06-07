@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(EnemyStatus))]
 public abstract class EnemyAttack : MobAttack
@@ -6,23 +8,14 @@ public abstract class EnemyAttack : MobAttack
     [SerializeField] protected EnemyStatus status;
     [SerializeField] protected float cooldownCounter = 0.0f; // ( 確認用 )後でinspectorからいじれなくする
 
-    protected int executionIndex = 0;     // 攻撃実行リストのインデックス
-    protected int atkListIndex = 0;       // 実行リストのインデックス
+    protected Dictionary<bool, EnemyAtkColliderMap[]> useAttackList = new();
+    protected string useAtkName = "";
+    protected int useAtkListIndex = 0;
+    protected bool isLongDist = false;
 
-    protected virtual float GetAttackPower(EnemyAtkColliderMap[] atkCollisions)
-    {
-        var atkPow = 0.0f;
+    public string GetUseAtkName => useAtkName;
 
-        for (int i = 0; i < atkCollisions.Length; i++)
-        {
-            if (!atkCollisions[i].collider.enabled) { continue; }
-
-            atkPow = atkCollisions[i].power;
-            break;
-        }
-
-        return atkPow;
-    }
+    protected virtual float GetAttackPower => useAttackList[isLongDist][useAtkListIndex].power;
 
     protected override void Start()
     {
@@ -38,16 +31,29 @@ public abstract class EnemyAttack : MobAttack
         CooldownCount();
     }
 
-    protected virtual void InitAttackColliders(EnemyAtkColliderMap[] atkColliders, int i, string atkName, string useAtkName = "Attack")
+    protected virtual void InitAttackColliders(bool isLongDist, EnemyAtkColliderMap[] atkColliders)
     {
-        atkColliders[i].attackName = atkName;
-        atkColliders[i].collider.enabled = false;
-        atkColliders[i].atkPossibleCollider.enabled = false;
+        useAttackList.Add(isLongDist, atkColliders);
 
-        // 最初に使用する攻撃が持っているColliderを判定可能にする
-        if (!useAtkName.Equals(atkName)) { return; }
+        for(int i = 0; i < atkColliders.Length; i++)
+        {
+            useAttackList[isLongDist][i].attackName = atkColliders[i].attackName;
+            useAttackList[isLongDist][i].collider.enabled = false;
+            useAttackList[isLongDist][i].atkPossibleCollider.enabled = false;
+        }
 
-        atkColliders[i].atkPossibleCollider.enabled = true;
+        SelectUseAttack();
+    }
+
+    protected virtual void SelectUseAttack()
+    {
+        isLongDist = status.IsLongDist;
+
+        useAtkListIndex = Random.Range(0, useAttackList[isLongDist].Length);
+        useAtkName = useAttackList[isLongDist][useAtkListIndex].attackName;
+
+        // 次に使う攻撃の侵入判定器を有効に
+        useAttackList[isLongDist][useAtkListIndex].atkPossibleCollider.enabled = true;
     }
 
     protected virtual void CooldownCount()
@@ -57,13 +63,25 @@ public abstract class EnemyAttack : MobAttack
         cooldownCounter -= Time.deltaTime;
     }
 
+    protected virtual void ColliderFinished()
+    {
+        for (int i = 0; i < useAttackList.Values.Count; i++)
+        {
+            if(!useAttackList[isLongDist][i].collider.enabled) { continue; }
+
+            useAttackList[isLongDist][i].collider.enabled = false;
+        }
+
+        useAttackList[isLongDist][useAtkListIndex].atkPossibleCollider.enabled = false;
+    }
+
     // 攻撃可能な状態であれば攻撃を行う
     public virtual void AttackIfPossible()
     {
         if (!status.CanAttack()) { return; }
 
         status.OnMoveFinished();
-        status.GoToAttackStateIfPossible();
+        status.GoToAttackStateIfPossible(useAtkName);
     }
 
     // 攻撃対象が範囲内にいる間呼ばれる
@@ -83,39 +101,42 @@ public abstract class EnemyAttack : MobAttack
 
     public override void OnAttackStart()
     {
+        // これから使う攻撃と同じ名前が入っている攻撃用コライダーを有効に
+        for (int i = 0; i < useAttackList.Values.Count; i++)
+        {
+            bool isEquals = useAttackList[isLongDist][useAtkListIndex].
+                attackName.Equals(useAttackList[isLongDist][i].attackName);
+
+            if (!isEquals) { continue; }
+
+            useAttackList[isLongDist][i].collider.enabled = true;
+        }
+
+        cooldownCounter = useAttackList[isLongDist][useAtkListIndex].cooldown;
+
         status.GetWeakPoint.OnCollisionEnableFinished();
     }
 
-    protected virtual void OnAttackColliderStart(EnemyAtkColliderMap[] atkColliders, string useAtkName = "Attack")
+    public override void OnHitAttack(Collider collider)
     {
-        for (int i = 0; i < atkColliders.Length; i++)
-        {
-            if (!useAtkName.Equals(atkColliders[i].attackName)) { continue; }
+        base.OnHitAttack(collider);
 
-            atkColliders[i].collider.enabled = true;
-            cooldownCounter = atkColliders[i].cooldown;
-        }
+        var targetMob = collider.GetComponent<PlayerStatus>();
+
+        if (!targetMob) { return; }
+
+        targetMob.Damage(GetAttackPower);
     }
 
     public override void OnAttackFinished()
     {
         base.OnAttackFinished();
 
+        ColliderFinished();
+
+        SelectUseAttack();
+
         status.GoToNormalStateIfPossible();
-    }
-
-    // 次に使用する攻撃以外のプレイヤー侵入判定器を判定しないようにする
-    protected virtual void FinishedAttackColliders(EnemyAtkColliderMap[] atkColliders, string nextAtkName)
-    {
-        for (int i = 0; i < atkColliders.Length; i++)
-        {
-            atkColliders[i].collider.enabled = false;
-            atkColliders[i].atkPossibleCollider.enabled = false;
-
-            if (!nextAtkName.Equals(atkColliders[i].attackName)) { continue; }
-
-            atkColliders[i].atkPossibleCollider.enabled = true;
-        }
     }
 
     public abstract class EnemyAtkColliderMap : AttackColliderMap

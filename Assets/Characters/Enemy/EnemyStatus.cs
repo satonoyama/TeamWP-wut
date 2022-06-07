@@ -21,7 +21,7 @@ public class EnemyStatus : MobStatus
     protected NavMeshAgent agent;
 
     [SerializeField] protected MovementController target;
-    [SerializeField] protected float distLength = 0.0f;
+    [SerializeField] protected bool isLongDist = false;
 
     [SerializeField] protected float triggerHpRate = 0.0f;   // “ÁŽê‚Ès“®‚ðŽÀs‚·‚éHPŠ„‡
     protected bool isExecuteSpecialBehavior = false;
@@ -38,6 +38,8 @@ public class EnemyStatus : MobStatus
     }
 
     public bool CanMove => actionState == ActionState.eMove;
+
+    public bool IsLongDist => isLongDist;
 
     public bool IsExecuteSpecialBehavior => isExecuteSpecialBehavior;
 
@@ -78,6 +80,16 @@ public class EnemyStatus : MobStatus
 
         actionState = ActionState.eScream;
         animator.SetTrigger("Scream");
+    }
+
+    public void OnLongDistColliderStay(Collider collider)
+    {
+        isLongDist = false;
+    }
+
+    public void OnLongDistColliderExit(Collider collider)
+    {
+        isLongDist = true;
     }
 
     public void OnMove()

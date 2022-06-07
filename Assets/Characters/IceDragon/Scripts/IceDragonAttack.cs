@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class IceDragonAttack : EnemyAttack
 {
@@ -14,11 +13,8 @@ public class IceDragonAttack : EnemyAttack
 
     public string AttackNameList(AttackNameEnum attack) => attackNameList[(int)attack];
   
-    // 使おうとしている攻撃名取得
-    public string GetUseAtkName() => AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-
-    [SerializeField] private IceDragonAtkColliderMap[] iceDragonAtkColliders;
-    [SerializeField] private AttackExecutionList[] executionList;
+    [SerializeField] private IceDragonAtkColliderMap[] nearAtkList;
+    [SerializeField] private IceDragonAtkColliderMap[] longDistAtkList;
 
     // 攻撃アニメーションのトリガー用の文字列配列
     private readonly string[] attackNameList = { "Bite", "WingClaw", "Breath", "FlyBreath" };
@@ -27,70 +23,22 @@ public class IceDragonAttack : EnemyAttack
     {
         base.Start();
 
-        // 最初に使用する攻撃名
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-
-        for (int i = 0; i < iceDragonAtkColliders.Length; i++)
+        for (int i = 0; i < nearAtkList.Length; i++)
         {
-            string atkName = AttackNameList(iceDragonAtkColliders[i].useAttackName);
-            InitAttackColliders(iceDragonAtkColliders, i, atkName, useAtkName);
+            nearAtkList[i].attackName = AttackNameList(nearAtkList[i].useAttackName);
         }
-    }
+        InitAttackColliders(false, nearAtkList);
 
-    public override void AttackIfPossible()
-    {
-        if (!status.CanAttack()) { return; }
-
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-
-        status.OnMoveFinished();
-        status.GoToAttackStateIfPossible(useAtkName);
-    }
-
-    public override void OnAttackStart()
-    {
-        base.OnAttackStart();
-
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-        OnAttackColliderStart(iceDragonAtkColliders, useAtkName);
-    }
-
-    public override void OnHitAttack(Collider collider)
-    {
-        base.OnHitAttack(collider);
-
-        var targetMob = collider.GetComponent<PlayerStatus>();
-
-        if (!targetMob) { return; }
-
-        targetMob.Damage(GetAttackPower(iceDragonAtkColliders));
-    }
-
-    public override void OnAttackFinished()
-    {
-        // 選択していたリストが最後まで到達した
-        if (++atkListIndex >= executionList[executionIndex].attackList.Length)
+        for (int i = 0; i < longDistAtkList.Length; i++)
         {
-            atkListIndex = 0;
-
-            executionIndex = Random.Range(0, executionList.Length);
+            longDistAtkList[i].attackName = AttackNameList(longDistAtkList[i].useAttackName);
         }
-
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-        FinishedAttackColliders(iceDragonAtkColliders, useAtkName);
-
-        base.OnAttackFinished();
+        InitAttackColliders(true, longDistAtkList);
     }
 
     [Serializable]
     public class IceDragonAtkColliderMap : EnemyAtkColliderMap
     {
         public AttackNameEnum useAttackName;
-    }
-
-    [Serializable]
-    public class AttackExecutionList
-    {
-        public AttackNameEnum[] attackList;
     }
 }
