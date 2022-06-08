@@ -16,6 +16,8 @@ public class PlayerAttack : MobAttack
     // ¡‚ÌSP—Ê‚©‚çŽg—p—Ê•ªˆø‚¢‚Ä‚àSP‚ª‘«‚è‚Ä‚¢‚é‚©‚Ç‚¤‚©
     public bool CheckSP => (status.Sp - magics[(int)nowUseID].useSpValue) >= magics[(int)nowUseID].useSpValue;
 
+    public float GetAtkPow => magics[(int)nowUseID].power;
+
     protected override void Start()
     {
         base.Start();
@@ -51,7 +53,11 @@ public class PlayerAttack : MobAttack
 
         if (!CheckSP) { return; }
 
-        magics[(int)id].collider.enabled = true;
+        int maxRange = magics[(int)id].collider.Length;
+        for(int i = 0; i < maxRange; i++)
+        {
+            magics[(int)id].collider[i].enabled = true;
+        }
 
         magics[(int)id].ability.OnActive();
 
@@ -62,7 +68,7 @@ public class PlayerAttack : MobAttack
     {
         base.OnHitAttack(collider);
 
-        var targetMobe = GetComponent<EnemyStatus>();
+        var targetMobe = collider.GetComponent<EnemyStatus>();
 
         if (!targetMobe) { return; }
 
@@ -73,7 +79,11 @@ public class PlayerAttack : MobAttack
     {
         base.OnAttackFinished();
 
-        magics[(int)nowUseID].collider.enabled = false;
+        int maxRange = magics[(int)nowUseID].collider.Length;
+        for (int i = 0; i < maxRange; i++)
+        {
+            magics[(int)nowUseID].collider[i].enabled = false;
+        }
 
         magics[(int)nowUseID].canDo = false;
 

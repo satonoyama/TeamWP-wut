@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -19,9 +20,16 @@ public class EnemyStatus : MobStatus
     }
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
+    protected float defaultAgentSpeed = 1.0f;
+    [SerializeField] protected float fastAgentSpeed = 1.0f;
 
     [SerializeField] protected MovementController target;
-    [SerializeField] protected bool isLongDist = false;
+    protected bool isNearDist = false;
+    protected bool isMiddleDist = false;
+
+    [SerializeField] protected float animationWaitTime = 0.0f;
+    [SerializeField] protected float slowlyAnimationSpeed = 0.0f;
+    protected float defaultAnimationSpeed = 0.0f;
 
     [SerializeField] protected float triggerHpRate = 0.0f;   // 特殊な行動を実行するHP割合
     protected bool isExecuteSpecialBehavior = false;
@@ -39,7 +47,11 @@ public class EnemyStatus : MobStatus
 
     public bool CanMove => actionState == ActionState.eMove;
 
-    public bool IsLongDist => isLongDist;
+    public bool IsNearDist => isNearDist;
+
+    public bool IsMiddleDist => isMiddleDist;
+
+    public bool IsLongDist => !isNearDist && !isMiddleDist;
 
     public bool IsExecuteSpecialBehavior => isExecuteSpecialBehavior;
 
@@ -65,6 +77,9 @@ public class EnemyStatus : MobStatus
         GetWeakPoint = GetComponent<EnemyWeakPoint>();
         agent = GetComponent<NavMeshAgent>();
 
+        defaultAgentSpeed = agent.speed;
+        defaultAnimationSpeed = animator.speed;
+
         // 戦闘開始時のアニメーションに遷移
         OnScream();
     }
@@ -74,22 +89,45 @@ public class EnemyStatus : MobStatus
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
     }
 
+    public void OnNearDistColliderStay()
+    {
+        isNearDist = true;
+    }
+
+    public void OnNearDistColliderExit()
+    {
+        isNearDist = false;
+    }
+
+    public void OnMiddleDistColliderStay()
+    {
+        if (isNearDist) { return; }
+
+        isMiddleDist = true;
+    }
+
+    public void OnMiddleDistColliderExit()
+    {
+        isNearDist = false;
+        isMiddleDist = false;
+    }
+
+    public void OnTracingSpeedUp()
+    {
+        agent.speed = fastAgentSpeed;
+    }
+
+    public void OnTracingSpeedDefault()
+    {
+        agent.speed = defaultAgentSpeed;
+    }
+
     public virtual void OnScream()
     {
         OnMoveFinished();
 
         actionState = ActionState.eScream;
         animator.SetTrigger("Scream");
-    }
-
-    public void OnLongDistColliderStay(Collider collider)
-    {
-        isLongDist = false;
-    }
-
-    public void OnLongDistColliderExit(Collider collider)
-    {
-        isLongDist = true;
     }
 
     public void OnMove()
@@ -101,7 +139,7 @@ public class EnemyStatus : MobStatus
         // 攻撃可能な状態であれば弱点を有効にするようにしている
         if (!CanAttack()) { return; }
 
-        GetWeakPoint.OnCollisionEnable();
+        GetWeakPoint.OnWeakPointStart();
     }
 
     public void OnMoveFinished()
@@ -118,31 +156,30 @@ public class EnemyStatus : MobStatus
         animator.SetTrigger("GetHit");
     }
 
-    public override void Damage(float damage)
-    {
-        base.Damage(damage);
-
-        if(GetWeakPoint.IsExecution)
-        {
-            GetWeakPoint.Damage(damage);
-
-            // ダメージを受けた結果、弱点のHPが無くなった場合は怯む
-            if(!GetWeakPoint.IsColliderEnable())
-            {
-                OnGetHit();
-                GetWeakPoint.OnCollisionEnableFinished();
-            }
-        }
-    }
-
     protected override void OnDie()
     {
         base.OnDie();
 
         OnMoveFinished();
 
+        GetWeakPoint.OnWeakPointFinished();
+
         WeakPointContainer.Instance.AllRemove();
 
         // TODO : Tansition to Clear Scene
+    }
+
+    public void OnPauseAnimation()
+    {
+        animator.speed = slowlyAnimationSpeed;
+        StartCoroutine(AnimationWaitCoroutine());
+    }
+
+    private IEnumerator AnimationWaitCoroutine()
+    {
+        yield return new WaitForSeconds(animationWaitTime);
+
+        animator.speed = defaultAnimationSpeed;
+        GetWeakPoint.OnWeakPointFinished();
     }
 }

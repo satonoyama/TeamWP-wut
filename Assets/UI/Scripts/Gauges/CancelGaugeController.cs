@@ -6,6 +6,8 @@ public class CancelGaugeController : FillerController
 
     private void Update()
     {
+        if (!weakPoint.IsExecution) { return; }
+
         UpdateGauge(image, weakPoint.Hp(), weakPoint.MaxHp());
     }
 }

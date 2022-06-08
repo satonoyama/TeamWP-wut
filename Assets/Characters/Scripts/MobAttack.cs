@@ -24,7 +24,7 @@ public class MobAttack : MonoBehaviour
 
     public abstract class AttackColliderMap
     {
-        public Collider collider;
+        public Collider[] collider;
         public float power = 1.0f;
         [HideInInspector] public string attackName;
     }

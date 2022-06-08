@@ -14,6 +14,7 @@ public class IceDragonAttack : EnemyAttack
     public string AttackNameList(AttackNameEnum attack) => attackNameList[(int)attack];
   
     [SerializeField] private IceDragonAtkColliderMap[] nearAtkList;
+    [SerializeField] private IceDragonAtkColliderMap[] middleAtkList;
     [SerializeField] private IceDragonAtkColliderMap[] longDistAtkList;
 
     // 攻撃アニメーションのトリガー用の文字列配列
@@ -27,13 +28,19 @@ public class IceDragonAttack : EnemyAttack
         {
             nearAtkList[i].attackName = AttackNameList(nearAtkList[i].useAttackName);
         }
-        InitAttackColliders(false, nearAtkList);
+        InitAttackColliders(DistantStateEnum.eNear, nearAtkList);
+
+        for(int i = 0; i < middleAtkList.Length; i++)
+        {
+            middleAtkList[i].attackName = AttackNameList(middleAtkList[i].useAttackName);
+        }
+        InitAttackColliders(DistantStateEnum.eMiddle, middleAtkList);
 
         for (int i = 0; i < longDistAtkList.Length; i++)
         {
             longDistAtkList[i].attackName = AttackNameList(longDistAtkList[i].useAttackName);
         }
-        InitAttackColliders(true, longDistAtkList);
+        InitAttackColliders(DistantStateEnum.eLong, longDistAtkList);
     }
 
     [Serializable]

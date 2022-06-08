@@ -1,62 +1,36 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class EnemyWeakPoint : MonoBehaviour
 {
-    [SerializeField] private WeakPointColliderMap[] weakPointColliders;
+    protected Dictionary<string, WeakPointColliderMap> weakPointList = new();
+    
+    [SerializeField] protected EnemyAttack attack;
 
-    protected string useAtkName = "Attack";     // とりあえず Attack を入れておく
+    protected Collider hitCollider = null;
+    protected string useAtkName;
     protected bool isExecution = false;
 
     public bool IsExecution => isExecution;
 
-    protected bool GetIsColliderEnable(WeakPointColliderMap[] weakPoints)
-    {
-        bool result = false;
-
-        for (int i = 0; i < weakPoints.Length; i++)
-        {
-            if (weakPoints[i].collider.enabled)
-            {
-                result = true;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-    protected float GetMaxHp(WeakPointColliderMap[] weakPoints)
-    {
-        float maxHp = 0.0f;
-
-        for (int i = 0; i < weakPoints.Length; i++)
-        {
-            if (!weakPoints[i].collider.enabled) { continue; }
-
-            maxHp += weakPoints[i].maxHp;
-        }
-
-        return maxHp;
-    }
-
-    protected float GetHp(WeakPointColliderMap[] weakPoints)
-    {
-        float hp = 0.0f;
-
-        for (int i = 0; i < weakPoints.Length; i++)
-        {
-            if (!weakPoints[i].collider.enabled) { continue; }
-
-            hp += weakPoints[i].hp;
-        }
-
-        return hp;
-    }
+    public void SetHitCollider(Collider collider) => hitCollider = collider;
 
     // １か所でも判定が有効になっていればTrueを返す
     public virtual bool IsColliderEnable()
     {
-        return GetIsColliderEnable(weakPointColliders);
+        bool result = false;
+
+        int maxRange = weakPointList[useAtkName].colliders.Length;
+        for(int i = 0; i < maxRange; i++)
+        {
+            if (!weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
+
+            result = true;
+            break;
+        }
+
+        return result;
     }
 
     // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -68,13 +42,33 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     // 判定が有効になっている部位の総最大HP取得
     public virtual float MaxHp()
     {
-        return GetMaxHp(weakPointColliders);
+        float maxHp = 0.0f;
+
+        int maxRange = weakPointList[useAtkName].colliders.Length;
+        for (int i = 0; i < maxRange; i++)
+        {
+            if (!weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
+
+            maxHp += weakPointList[useAtkName].maxHp;
+        }
+
+        return maxHp;
     }
 
     // 判定が有効になっている部位の総HP取得
     public virtual float Hp()
     {
-        return GetHp(weakPointColliders);
+        float hp = 0.0f;
+
+        int maxRange = weakPointList[useAtkName].colliders.Length;
+        for (int i = 0; i < maxRange; i++)
+        {
+            if (!weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
+
+            hp += weakPointList[useAtkName].hp;
+        }
+
+        return hp;
     }
 
     // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
@@ -82,106 +76,117 @@ public abstract class EnemyWeakPoint : MonoBehaviour
 
     protected virtual void Start()
     {
-        InitWeakPointColliders(weakPointColliders);
+        attack = GetComponentInChildren<EnemyAttack>();
+
+        hitCollider = GetComponent<Collider>();
     }
 
-    public void InitWeakPointColliders(WeakPointColliderMap[] weakPoints, string userName = "Body")
+    protected virtual void InitWeakPointColliders(string attackName, WeakPointColliderMap weakPoint)
     {
-        for (int i = 0; i < weakPoints.Length; i++)
+        weakPointList.Add(attackName, weakPoint);
+
+        useAtkName = attackName;
+        weakPointList[attackName].hp = weakPointList[attackName].maxHp;
+
+        OnColliderFinished();
+
+        int maxRange = weakPointList[useAtkName].colliders.Length;
+        for (int i = 0; i < maxRange; i++)
         {
-            weakPoints[i].collider.enabled = false;
-            weakPoints[i].hp = weakPoints[i].maxHp;
-            weakPoints[i].attackName = userName;
-            WeakPointContainer.Instance.Add(weakPoints[i].pointPosCollider);
+            WeakPointContainer.Instance.Add(weakPointList[attackName].colliders[i].pointPosCollider);
         }
     }
 
-    public void InitWeakPointColliders(WeakPointColliderMap[] weakPoints, int i, string userName = "Body")
+    protected virtual void OnColliderFinished()
     {
-        weakPoints[i].collider.enabled = false;
-        weakPoints[i].hp = weakPoints[i].maxHp;
-        weakPoints[i].attackName = userName;
-        WeakPointContainer.Instance.Add(weakPoints[i].pointPosCollider);
+        int maxRange = weakPointList[useAtkName].colliders.Length;
+        for (int i = 0; i < maxRange; i++)
+        {
+            if (!weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
+
+            weakPointList[useAtkName].colliders[i].collider.enabled = false;
+            weakPointList[useAtkName].colliders[i].pointPosCollider.enabled = false;
+
+            Collider pointCollider = weakPointList[useAtkName].colliders[i].pointPosCollider;
+
+            if (!WeakPointContainer.Instance.GetWeakPoint(pointCollider)) { continue; }
+
+            WeakPointContainer.Instance.GetWeakPoint(pointCollider).OnActiveFinished();
+        }
     }
 
     // 特定の判定を有効にする
-    public virtual void OnCollisionEnable()
+    public virtual void OnWeakPointStart()
     {
-        OnWPCollisionEnable(weakPointColliders);
+        useAtkName = attack.GetUseAtkName;
+
+        int maxRange = weakPointList[useAtkName].colliders.Length;
+        for (int i = 0; i < maxRange; i++)
+        {
+            weakPointList[useAtkName].colliders[i].collider.enabled = true;
+            weakPointList[useAtkName].hp = weakPointList[useAtkName].maxHp;
+
+            Collider pointCollider = weakPointList[useAtkName].colliders[i].pointPosCollider;
+
+            if (!WeakPointContainer.Instance.GetWeakPoint(pointCollider)) { continue; }
+
+            WeakPointContainer.Instance.GetWeakPoint(pointCollider).OnActive();
+        }
 
         isExecution = true;
     }
 
-    protected void OnWPCollisionEnable(WeakPointColliderMap[] weakPoints)
-    {
-        for (int i = 0; i < weakPoints.Length; i++)
-        {
-            if (useAtkName.Equals(weakPoints[i].attackName))
-            {
-                weakPoints[i].collider.enabled = true;
-                weakPoints[i].hp = weakPoints[i].maxHp;
-
-                if (!WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider)) { continue; }
-                WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider).OnActive();
-            }
-        }
-    }
-
     // 全ての判定を無効にする
-    public virtual void OnCollisionEnableFinished()
+    public virtual void OnWeakPointFinished()
     {
         if (!IsExecution) { return; }
 
-        OnWPCollisionEnableFinished(weakPointColliders);
+        weakPointList[useAtkName].hp = 0.0f;
+
+        OnColliderFinished();
 
         isExecution = false;
     }
 
-    protected void OnWPCollisionEnableFinished(WeakPointColliderMap[] weakPoints)
+    public virtual void OnHitPlayerAttack(Collider atkCollider)
     {
-        for (int i = 0; i < weakPoints.Length; i++)
+        var attack = atkCollider.GetComponent<PlayerAttack>();
+
+        if (!attack) { return; }
+
+        int maxRange = weakPointList[useAtkName].colliders.Length;
+        for (int i = 0; i < maxRange; i++)
         {
-            if (!weakPoints[i].collider.enabled) { continue; }
+            // 当てられたコライダーと一致しない
+            if (hitCollider != weakPointList[useAtkName].colliders[i].collider ||
+                !weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
 
-            OnWeakPointFinished(weakPoints, i);
-        }
-    }
+            weakPointList[useAtkName].hp -= attack.GetAtkPow;
+            if (weakPointList[useAtkName].hp > 0.0f) { continue; }
 
-    protected void OnWeakPointFinished(WeakPointColliderMap[] weakPoints, int i)
-    {
-        weakPoints[i].collider.enabled = false;
+            weakPointList[useAtkName].colliders[i].collider.enabled = false;
 
-        weakPoints[i].hp = 0.0f;
+            weakPointList[useAtkName].hp = 0.0f;
 
-        if (!WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider)) { return; }
-        WeakPointContainer.Instance.GetWeakPoint(weakPoints[i].pointPosCollider).OnActiveFinished();
-    }
+            Collider pointCollider = weakPointList[useAtkName].colliders[i].pointPosCollider;
 
-    public virtual void Damage(float dmg)
-    {
-        OnDamage(weakPointColliders, dmg);
-    }
+            if (!WeakPointContainer.Instance.GetWeakPoint(pointCollider)) { return; }
 
-    protected void OnDamage(WeakPointColliderMap[] weakPoints, float dmg)
-    {
-        for (int i = 0; i < weakPoints.Length; i++)
-        {
-            if (!weakPoints[i].collider.enabled) { continue; }
-
-            weakPoints[i].hp -= dmg;
-            if (weakPoints[i].hp > 0.0f) { continue; }
-
-            // HPが無くなった部位を無効にする
-            OnWeakPointFinished(weakPoints, i);
+            WeakPointContainer.Instance.GetWeakPoint(pointCollider).OnActiveFinished();
         }
     }
 
     public abstract class WeakPointColliderMap
     {
-        public Collider collider;
-        public Collider pointPosCollider;
+        public PointCollider[] colliders;
         public float maxHp = 1.0f;
         [HideInInspector] public float hp = 1.0f;
-        [HideInInspector] public string attackName;
+    }
+
+    [Serializable]
+    public class PointCollider
+    {
+        public Collider collider;
+        public Collider pointPosCollider;
     }
 }
