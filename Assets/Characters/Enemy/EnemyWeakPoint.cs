@@ -120,6 +120,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     {
         useAtkName = attack.GetUseAtkName;
 
+        if (!weakPointList.ContainsKey(useAtkName)) { return; }
+
         int maxRange = weakPointList[useAtkName].colliders.Length;
         for (int i = 0; i < maxRange; i++)
         {
