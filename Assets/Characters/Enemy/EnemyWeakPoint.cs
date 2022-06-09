@@ -118,6 +118,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     // “Á’è‚Ì”»’è‚ð—LŒø‚É‚·‚é
     public virtual void OnWeakPointStart()
     {
+        if (IsExecution) { return; }
+
         useAtkName = attack.GetUseAtkName;
 
         if (!weakPointList.ContainsKey(useAtkName)) { return; }

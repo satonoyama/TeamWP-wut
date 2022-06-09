@@ -41,6 +41,8 @@ public class IceDragonAttack : EnemyAttack
             longDistAtkList[i].attackName = AttackNameList(longDistAtkList[i].useAttackName);
         }
         InitAttackColliders(DistantStateEnum.eLong, longDistAtkList);
+
+        SelectUseAttack();
     }
 
     [Serializable]

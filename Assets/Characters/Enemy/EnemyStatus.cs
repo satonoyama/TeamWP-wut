@@ -89,20 +89,21 @@ public class EnemyStatus : MobStatus
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
     }
 
-    public void OnNearDistColliderStay()
+    public void OnNearDistColliderEnter()
     {
         isNearDist = true;
+        isMiddleDist = false;
     }
 
     public void OnNearDistColliderExit()
     {
         isNearDist = false;
+        isMiddleDist = true;
     }
 
-    public void OnMiddleDistColliderStay()
+    public void OnMiddleDistColliderEnter()
     {
-        if (isNearDist) { return; }
-
+        isNearDist = false;
         isMiddleDist = true;
     }
 

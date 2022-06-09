@@ -8,11 +8,6 @@ public class IceDragonStatus : EnemyStatus
     protected override void Update()
     {
         base.Update();
-
-        //if ((hp -= Time.deltaTime) <= 0.0f)
-        //{
-        //    OnDie();
-        //}
     }
 
     public override void OnScream()
@@ -50,6 +45,7 @@ public class IceDragonStatus : EnemyStatus
 
     public override void GoToNormalStateIfPossible()
     {
+        // « ‚±‚ê‚ª‚È‚¢‚Æ’…—¤’†‚ÉŽŸ‚ÌUŒ‚‚ð‚µ‚Ä‚µ‚Ü‚¤
         if (isLanding) { return; }
 
         base.GoToNormalStateIfPossible();

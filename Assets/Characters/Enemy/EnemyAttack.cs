@@ -154,10 +154,10 @@ public abstract class EnemyAttack : MobAttack
     {
         base.OnAttackFinished();
 
-        SelectUseAttack();
-
         status.GetWeakPoint.OnWeakPointFinished();
         status.GoToNormalStateIfPossible();
+
+        SelectUseAttack();
     }
 
     public abstract class EnemyAtkColliderMap : AttackColliderMap

@@ -47,8 +47,6 @@ public class EnemyMove : MonoBehaviour
         {
             var pos = legObjects[i].transform.position;
 
-            Debug.DrawRay(pos, rayDir, Color.red);
-
             int hitCount = Physics.RaycastNonAlloc(pos, rayDir, _raycastHits, rayDist, raycastLayerMask);
 
             // ’n–Ê‚ÉG‚ê‚Ä‚È‚¢ê‡‚Í»šº‚ğ”­¶‚³‚¹‚È‚¢
