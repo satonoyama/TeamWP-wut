@@ -11,8 +11,11 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     protected Collider hitCollider = null;
     protected string useAtkName;
     protected bool isExecution = false;
+    protected bool isHitWeakPoint = false;
 
     public bool IsExecution => isExecution;
+
+    public bool IsHitWeakPoint => IsHitWeakPoint;
 
     public void SetHitCollider(Collider collider) => hitCollider = collider;
 
@@ -138,6 +141,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         }
 
         isExecution = true;
+
+        isHitWeakPoint = false;
     }
 
     // ‘S‚Ä‚Ì”»’è‚ð–³Œø‚É‚·‚é
@@ -150,6 +155,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         OnColliderFinished();
 
         isExecution = false;
+
+        isHitWeakPoint = false;
     }
 
     public virtual void OnHitPlayerAttack(Collider atkCollider)
@@ -165,6 +172,8 @@ public abstract class EnemyWeakPoint : MonoBehaviour
             if (hitCollider != weakPointList[useAtkName].colliders[i].collider ||
                 !weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
 
+            isHitWeakPoint = true;
+
             weakPointList[useAtkName].hp -= attack.GetAtkPow;
             if (weakPointList[useAtkName].hp > 0.0f) { continue; }
 
@@ -174,7 +183,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
 
             Collider pointCollider = weakPointList[useAtkName].colliders[i].pointPosCollider;
 
-            if (!WeakPointContainer.Instance.GetWeakPoint(pointCollider)) { return; }
+            if (!WeakPointContainer.Instance.GetWeakPoint(pointCollider)) { continue; }
 
             WeakPointContainer.Instance.GetWeakPoint(pointCollider).OnActiveFinished();
         }

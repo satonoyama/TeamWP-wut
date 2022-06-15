@@ -7,7 +7,8 @@ public class EffectController : MonoBehaviour
     {
         eRoar,
         eShockwave,
-        eBreath
+        eFog,
+        eBreath,
     }
     private EffectID effectID = EffectID.eRoar;
 
@@ -26,20 +27,23 @@ public class EffectController : MonoBehaviour
 
     public void OnPlayParticle(EffectID id)
     {
-        effectID = id;
+        if (!effects[(int)id].particle) { return; }
 
-        if (!effects[(int)effectID].particle) { return; }
-
-        // 1ÉtÉåÅ[ÉÄíxÇÍÇÈÇÃÇñhÇÆÇΩÇﬂÇÃê›íË
-        if(effects[(int)effectID].posObject)
+        if(effects[(int)id].isSettingID)
         {
-            var pos = effects[(int)effectID].posObject.transform.position;
-            var rot = effects[(int)effectID].posObject.transform.rotation;
-
-            effects[(int)effectID].particle.transform.SetPositionAndRotation(pos, rot);
+            effectID = id;
         }
 
-        effects[(int)effectID].particle.Play();
+        // 1ÉtÉåÅ[ÉÄíxÇÍÇÈÇÃÇñhÇÆÇΩÇﬂÇÃê›íË
+        if (effects[(int)id].posObject)
+        {
+            var pos = effects[(int)id].posObject.transform.position;
+            var rot = effects[(int)id].posObject.transform.rotation;
+
+            effects[(int)id].particle.transform.SetPositionAndRotation(pos, rot);
+        }
+
+        effects[(int)id].particle.Play();
 
         isStop = false;
     }
@@ -72,5 +76,6 @@ public class EffectController : MonoBehaviour
         public EffectID id;
         public ParticleSystem particle = null;
         public GameObject posObject = null;
+        public bool isSettingID = true;
     }
 }

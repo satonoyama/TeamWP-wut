@@ -24,6 +24,7 @@ public class EnemyStatus : MobStatus
     [SerializeField] protected float fastAgentSpeed = 1.0f;
 
     [SerializeField] protected MovementController target;
+    protected string getHitAnimationName = "GetHit";
     protected bool isNearDist = false;
     protected bool isMiddleDist = false;
 
@@ -135,6 +136,7 @@ public class EnemyStatus : MobStatus
     {
         actionState = ActionState.eMove;
         agent.isStopped = false;
+        animator.speed = defaultAnimationSpeed;
 
         // 移動しながら攻撃をするモンスターもいるので、
         // 攻撃可能な状態であれば弱点を有効にするようにしている
@@ -154,7 +156,36 @@ public class EnemyStatus : MobStatus
         if(actionState == ActionState.eGetHit) { return; }
 
         actionState = ActionState.eGetHit;
-        animator.SetTrigger("GetHit");
+        animator.SetTrigger(getHitAnimationName);
+
+        GetWeakPoint.OnWeakPointFinished();
+    }
+
+    public virtual void OnDamage(Collider collider, float damage)
+    {
+        if(GetWeakPoint.IsExecution)
+        {
+            GetWeakPoint.OnHitPlayerAttack(collider);
+
+            if(GetWeakPoint.Hp() <= 0.0f)
+            {
+                OnGetHit();
+            }
+        }
+
+        Damage(damage);
+    }
+
+    public override void Damage(float damage)
+    {
+        float damageVal = damage;
+
+        if(GetWeakPoint.IsHitWeakPoint)
+        {
+            damageVal *= 2.0f;
+        }
+
+        base.Damage(damageVal);
     }
 
     protected override void OnDie()

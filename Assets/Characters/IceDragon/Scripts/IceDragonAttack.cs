@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class IceDragonAttack : EnemyAttack
 {
@@ -8,6 +9,7 @@ public class IceDragonAttack : EnemyAttack
         eBite,          // 噛みつき
         eWingClaw,      // 翼爪
         eBreath,        // ブレス
+        eIceLance,      // 氷槍
         eFlyBreath,     // 飛行ブレス
     }
 
@@ -18,7 +20,7 @@ public class IceDragonAttack : EnemyAttack
     [SerializeField] private IceDragonAtkColliderMap[] longDistAtkList;
 
     // 攻撃アニメーションのトリガー用の文字列配列
-    private readonly string[] attackNameList = { "Bite", "WingClaw", "Breath", "FlyBreath" };
+    private readonly string[] attackNameList = { "Bite", "WingClaw", "Breath", "IceLance", "FlyBreath" };
 
     protected override void Start()
     {
@@ -43,6 +45,30 @@ public class IceDragonAttack : EnemyAttack
         InitAttackColliders(DistantStateEnum.eLong, longDistAtkList);
 
         SelectUseAttack();
+    }
+
+    public void SelectUseAttack(AttackNameEnum id)
+    {
+        ColliderFinished();
+
+        string name;
+        for(int i = 0; i < useAttackList[distState].Length; i++)
+        {
+            name = attackNameList[(int)id];
+            if(name.Equals(useAttackList[distState][i].attackName))
+            {
+                useAtkListIndex = i;
+                break;
+            }
+
+            useAtkListIndex = Random.Range(0, useAttackList[distState].Length);
+        }
+
+        useAtkName = useAttackList[distState][useAtkListIndex].attackName;
+
+        useAttackList[distState][useAtkListIndex].atkPossibleCollider.enabled = true;
+
+        status.GetWeakPoint.OnWeakPointStart();
     }
 
     [Serializable]
