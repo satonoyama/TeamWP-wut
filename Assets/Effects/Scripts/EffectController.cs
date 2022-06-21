@@ -8,6 +8,7 @@ public class EffectController : MonoBehaviour
         eRoar,
         eShockwave,
         eFog,
+        eFogBreath,
         eBreath,
     }
     private EffectID effectID = EffectID.eRoar;

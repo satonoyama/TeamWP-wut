@@ -14,7 +14,7 @@ public class IceDragonAttack : EnemyAttack
     }
 
     public string AttackNameList(AttackNameEnum attack) => attackNameList[(int)attack];
-  
+
     [SerializeField] private IceDragonAtkColliderMap[] nearAtkList;
     [SerializeField] private IceDragonAtkColliderMap[] middleAtkList;
     [SerializeField] private IceDragonAtkColliderMap[] longDistAtkList;
@@ -44,31 +44,26 @@ public class IceDragonAttack : EnemyAttack
         }
         InitAttackColliders(DistantStateEnum.eLong, longDistAtkList);
 
+        probSelectInfo.originalVal = probSelectInfo.probability;
+
         SelectUseAttack();
     }
 
-    public void SelectUseAttack(AttackNameEnum id)
+    public override void SelectUseAttack()
     {
         ColliderFinished();
 
-        string name;
-        for(int i = 0; i < useAttackList[distState].Length; i++)
+        if(IsSelectedByProbability())
         {
-            name = attackNameList[(int)id];
-            if(name.Equals(useAttackList[distState][i].attackName))
-            {
-                useAtkListIndex = i;
-                break;
-            }
-
-            useAtkListIndex = Random.Range(0, useAttackList[distState].Length);
+            useAtkName = AttackNameList(AttackNameEnum.eIceLance);
+            return;
         }
 
-        useAtkName = useAttackList[distState][useAtkListIndex].attackName;
+        probSelectInfo.probability = probSelectInfo.originalVal;
 
-        useAttackList[distState][useAtkListIndex].atkPossibleCollider.enabled = true;
+        base.SelectUseAttack();
 
-        status.GetWeakPoint.OnWeakPointStart();
+        cooldownCounter = useAttackList[distState][useAtkListIndex].cooldown;
     }
 
     [Serializable]

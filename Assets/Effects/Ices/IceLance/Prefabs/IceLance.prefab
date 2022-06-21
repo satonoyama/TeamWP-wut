@@ -364,7 +364,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 573239649496036628}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: caa0c0129975e334aaf73fd13ff736bb, type: 3}
+  m_Script: {fileID: 11500000, guid: 4370ca24a94fa2e46ab8839308ef0962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   power: 10
@@ -373,7 +373,7 @@ MonoBehaviour:
   raycastLayerMask:
     serializedVersion: 2
     m_Bits: 1
-  rayDist: 1
+  rayDist: 0.5
 --- !u!1 &991104354199177562
 GameObject:
   m_ObjectHideFlags: 0

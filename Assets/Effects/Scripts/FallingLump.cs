@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class IceLance : MonoBehaviour
+public class FallingLump: MonoBehaviour
 {
     private enum MoveState
     {
@@ -14,7 +14,9 @@ public class IceLance : MonoBehaviour
     [SerializeField] private float power = 1.0f;
     [SerializeField] private float moveSpeed = 1.0f;
     private PlayerStatus target = null;
-    private ParticleSystem iceParticle = null;
+    private ParticleSystem fogParticle = null;
+    private ParticleSystem followParticle = null;
+    private ParticleSystem explotionParticle = null;
     private bool isTracingTarget = false;
 
     private GameObject child = null;
@@ -23,7 +25,7 @@ public class IceLance : MonoBehaviour
     [SerializeField] private float waitSeconds = 0.01f;
     private readonly int maxColorCount = 255;
 
-    private GameObject waitPos = null;
+    private Vector3 waitPos = new();
     private Vector3 moveVec = new();
 
     [SerializeField] private LayerMask raycastLayerMask;
@@ -31,7 +33,7 @@ public class IceLance : MonoBehaviour
     private Vector3 rayDir = new();
     private readonly RaycastHit[] raycastHits = new RaycastHit[1];
 
-    private void SetPosByWaitPos() => transform.position = waitPos.transform.position;
+    private void SetPosByWaitPos() => transform.position = waitPos;
 
     private bool IsWait => status == MoveState.eWait;
 
@@ -50,17 +52,36 @@ public class IceLance : MonoBehaviour
         return true;
     }
 
-    public void Initialize(PlayerStatus player, ParticleSystem particle, GameObject waitPosObj, bool isTracing)
+    public void SetParticles(ParticleSystem explotion, ParticleSystem fog, ParticleSystem follow)
+    {
+        explotionParticle = explotion;
+        fogParticle = fog;
+        followParticle = follow;
+    }
+
+    public void Initialize(PlayerStatus player, Vector3 waitPosition, bool isTracing)
     {
         target = player;
-        iceParticle = particle;
-        waitPos = waitPosObj;
+        waitPos = waitPosition;
+
         isTracingTarget = isTracing;
 
-        if (iceParticle) 
+        if (fogParticle)
         {
-            iceParticle.transform.position = transform.position;
-            iceParticle.Play();
+            fogParticle.transform.position = waitPos;
+            fogParticle.Play();
+        }
+
+        if (followParticle)
+        {
+            followParticle.transform.position = transform.position;
+            followParticle.Play();
+        }
+
+        if (!isTracingTarget)
+        {
+            var rot = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
+            transform.rotation = rot;
         }
 
         StartCoroutine(Transparent());
@@ -112,20 +133,26 @@ public class IceLance : MonoBehaviour
 
         transform.position += moveVec;
 
-        if (iceParticle)
+        if (followParticle)
         {
-            iceParticle.transform.position = transform.position;
+            followParticle.transform.position = transform.position;
         }
 
         if (CheckIsHit())
         {
+            if(explotionParticle)
+            {
+                explotionParticle.transform.position = transform.position;
+                explotionParticle.Play();
+            }
+
             StopIceLance();
         }
     }
 
     private void UpdateRotateByTarget()
     {
-        if (!IsWait) { return; }
+        if (!IsWait || !isTracingTarget) { return; }
 
         transform.LookAt(target.transform);
     }
@@ -141,8 +168,6 @@ public class IceLance : MonoBehaviour
         else
         {
             moveVec = Vector3.down;
-            Quaternion rot = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
-            transform.rotation = rot * waitPos.transform.rotation;
         }
 
         rayDir = moveVec;
@@ -151,12 +176,12 @@ public class IceLance : MonoBehaviour
         moveVec *= moveSpeed;
     }
 
-    private void StopIceLance()
+    private void BreakIceLance()
     {
         status = MoveState.eHit;
-        moveVec = Vector3.zero;
 
-        if (iceParticle && iceParticle.isPlaying) { iceParticle.Stop(); }
+        if (fogParticle && fogParticle.isPlaying) { fogParticle.Stop(); }
+        if (followParticle && followParticle.isPlaying) { followParticle.Stop(); }
 
         for (int i = 0; i < childrenNum; i++)
         {
@@ -165,6 +190,12 @@ public class IceLance : MonoBehaviour
         }
 
         StartCoroutine(Transparent());
+    }
+
+    private void StopIceLance()
+    {
+        moveVec = Vector3.zero;
+        BreakIceLance();
     }
 
     public void OnHitIceLance()
@@ -180,7 +211,7 @@ public class IceLance : MonoBehaviour
     {
         if (!IsExecutable) { return; }
 
-        StopIceLance();
+        BreakIceLance();
     }
 
     private IEnumerator Transparent()
@@ -194,23 +225,17 @@ public class IceLance : MonoBehaviour
                 if (IsWait)
                 {
                     child.GetComponent<MeshRenderer>().material.color += new Color32(0, 0, 0, 1);
+
+                    if(i >= maxColorCount - 1) { OnShoot(); }
                 }
-                else
+                else if(IsHit)
                 {
                     child.GetComponent<MeshRenderer>().material.color -= new Color32(0, 0, 0, 1);
+
+                    if(i >= maxColorCount - 1) { Destroy(gameObject); }
                 }
             }
             yield return new WaitForSeconds(waitSeconds);
-        }
-
-        if (IsWait)
-        {
-            OnShoot();
-        }
-
-        if(IsHit)
-        {
-            Destroy(gameObject);
         }
     }
 }

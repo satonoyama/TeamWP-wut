@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -16,11 +17,59 @@ public abstract class EnemyAttack : MobAttack
     [SerializeField] protected EnemyStatus status;
     [SerializeField] protected float cooldownCounter = 0.0f; // ( Šm”F—p )Œã‚Åinspector‚©‚ç‚¢‚¶‚ê‚È‚­‚·‚é
 
+    [Serializable]
+    protected struct ProbabilitySelectInfo
+    {
+        [SerializeField] [Range(0.0f, 1.0f)] public float probability;
+        [SerializeField]  public float cooldown;
+        [HideInInspector] public float originalVal;
+        [HideInInspector] public bool isSelect;
+    }
+    [SerializeField] protected ProbabilitySelectInfo probSelectInfo;
+
     protected Dictionary<DistantStateEnum, EnemyAtkColliderMap[]> useAttackList = new();
     protected string useAtkName = "";
     protected int useAtkListIndex = 0;
 
-    public bool IsEndCooldown => cooldownCounter <= 0.0f;
+    [SerializeField] protected float atkReSelectTime = 1.0f;
+    protected float reSelectCounter = 0.0f;
+
+    protected virtual bool IsSelectedByProbability()
+    {
+        var probability = Random.Range(0.0f, 1.0f);
+
+        if (probability <= probSelectInfo.probability)
+        {
+            probSelectInfo.isSelect = true;
+
+            probSelectInfo.probability /= 2.0f;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    protected virtual bool IsEnableCollider()
+    {
+        bool result = false;
+
+        int maxRange = useAttackList[distState][useAtkListIndex].collider.Length;
+        for (int i = 0; i < maxRange; i++)
+        {
+            if(!useAttackList[distState][useAtkListIndex].collider[i].enabled) { continue; }
+
+            result = true;
+            break;
+        }
+
+        return result;
+    }
+
+    protected virtual bool IsDisableAfterHit =>
+    useAttackList[distState][useAtkListIndex].isDisableAfterHit;
+
+    protected virtual bool IsEndCooldown => cooldownCounter <= 0.0f;
 
     public string GetUseAtkName => useAtkName;
 
@@ -31,6 +80,8 @@ public abstract class EnemyAttack : MobAttack
         base.Start();
 
         status = GetComponentInChildren<EnemyStatus>();
+
+        reSelectCounter = atkReSelectTime;
     }
 
     protected override void Update()
@@ -39,12 +90,9 @@ public abstract class EnemyAttack : MobAttack
 
         CooldownCount();
 
-        bool canStartOutOfRange = IsEndCooldown && useAttackList[distState][useAtkListIndex].canStartOutOfRange;
+        AtkReSelectCount();
 
-        if (canStartOutOfRange)
-        {
-            AttackIfPossible();
-        }
+        OnAtkStartOutOfRange();
     }
 
     protected virtual void InitAttackColliders(DistantStateEnum dist, EnemyAtkColliderMap[] atkColliders)
@@ -56,9 +104,16 @@ public abstract class EnemyAttack : MobAttack
         for(int i = 0; i < atkColliders.Length; i++)
         {
             useAttackList[distState][i].attackName = atkColliders[i].attackName;
-            useAttackList[distState][i].atkPossibleCollider.enabled = false;
+
+            if(useAttackList[distState][i].atkPossibleCollider)
+            {
+                useAttackList[distState][i].atkPossibleCollider.enabled = false;
+            }
 
             int maxRange = useAttackList[distState][i].collider.Length;
+
+            if(maxRange == 0) { continue; }
+
             for (int num = 0; num < maxRange; num++)
             {
                 useAttackList[distState][i].collider[num].enabled = false;
@@ -78,7 +133,33 @@ public abstract class EnemyAttack : MobAttack
         useAtkName = useAttackList[distState][useAtkListIndex].attackName;
 
         // ŽŸ‚ÉŽg‚¤UŒ‚‚ÌN“ü”»’èŠí‚ð—LŒø‚É
+        if (!useAttackList[distState][useAtkListIndex].atkPossibleCollider) { return; }
         useAttackList[distState][useAtkListIndex].atkPossibleCollider.enabled = true;
+    }
+
+    protected virtual void ReSelectUseAttack()
+    {
+        status.GetWeakPoint.OnWeakPointFinished();
+
+        SelectUseAttack();
+        
+        status.GetWeakPoint.OnWeakPointStart();
+    }
+
+    protected virtual void ColliderFinished()
+    {
+        if (!IsEnableCollider()) { return; }
+
+        int maxRange = useAttackList[distState][useAtkListIndex].collider.Length;
+        for (int num = 0; num < maxRange; num++)
+        {
+            if (!useAttackList[distState][useAtkListIndex].collider[num].enabled) { continue; }
+
+            useAttackList[distState][useAtkListIndex].collider[num].enabled = false;
+        }
+
+        if (!useAttackList[distState][useAtkListIndex].atkPossibleCollider) { return; }
+        useAttackList[distState][useAtkListIndex].atkPossibleCollider.enabled = false;
     }
 
     protected virtual void CooldownCount()
@@ -88,24 +169,37 @@ public abstract class EnemyAttack : MobAttack
         cooldownCounter -= Time.deltaTime;
     }
 
-    protected virtual void ColliderFinished()
+    protected virtual void AtkReSelectCount()
     {
-        for (int i = 0; i < useAttackList[distState].Length; i++)
+        if (!IsEndCooldown) { return; }
+
+        reSelectCounter -= 1.0f * Time.deltaTime;
+
+        if (reSelectCounter <= 0.0f)
         {
-            int maxRange = useAttackList[distState][i].collider.Length;
-            for (int num = 0; num < maxRange; num++)
-            {
-                if (!useAttackList[distState][i].collider[num].enabled) { continue; }
+            reSelectCounter = atkReSelectTime;
 
-                useAttackList[distState][i].collider[num].enabled = false;
-            }
+            ReSelectUseAttack();
         }
+    }
 
-        useAttackList[distState][useAtkListIndex].atkPossibleCollider.enabled = false;
+    protected virtual void OnAtkStartOutOfRange()
+    {
+        if (!IsEndCooldown) { return; }
+
+        bool canStartOutOfRange = probSelectInfo.isSelect ||
+             useAttackList[distState][useAtkListIndex].canStartOutOfRange;
+
+        if (!canStartOutOfRange) { return; }
+
+        probSelectInfo.isSelect = false;
+        cooldownCounter = probSelectInfo.cooldown;
+
+        AttackIfPossible();
     }
 
     // UŒ‚‰Â”\‚Èó‘Ô‚Å‚ ‚ê‚ÎUŒ‚‚ðs‚¤
-    public virtual void AttackIfPossible()
+    protected virtual void AttackIfPossible()
     {
         if (!status.CanAttack()) { return; }
 
@@ -148,6 +242,11 @@ public abstract class EnemyAttack : MobAttack
         if (!targetMob) { return; }
 
         targetMob.Damage(GetAttackPower);
+
+        if(IsDisableAfterHit)
+        {
+            ColliderFinished();
+        }
     }
 
     public override void OnAttackFinished()
@@ -162,8 +261,9 @@ public abstract class EnemyAttack : MobAttack
 
     public abstract class EnemyAtkColliderMap : AttackColliderMap
     {
-        public Collider atkPossibleCollider;
+        public Collider atkPossibleCollider = null;
         public float cooldown = 1.0f;
         public bool canStartOutOfRange = false;
+        public bool isDisableAfterHit = false;
     }
 }

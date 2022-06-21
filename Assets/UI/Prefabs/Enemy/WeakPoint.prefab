@@ -90,5 +90,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 7062204825282754226}
-  initScale: {x: 5, y: 5, z: 5}
+  initScale: {x: 10, y: 10, z: 10}
   scaleDownVal: 0.9

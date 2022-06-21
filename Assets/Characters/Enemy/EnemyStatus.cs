@@ -24,6 +24,8 @@ public class EnemyStatus : MobStatus
     [SerializeField] protected float fastAgentSpeed = 1.0f;
 
     [SerializeField] protected MovementController target;
+    [SerializeField] protected float downTime = 1.0f;
+    protected float downTimeCounter = 0.0f;
     protected string getHitAnimationName = "GetHit";
     protected bool isNearDist = false;
     protected bool isMiddleDist = false;
@@ -39,7 +41,7 @@ public class EnemyStatus : MobStatus
 
     public bool CanAttack()
     {
-        if(!IsAttackable ||
+        if(!IsAttackable || IsGetHit ||
            actionState == ActionState.eScream ||
            actionState == ActionState.eAttack) { return false; }
 
@@ -48,11 +50,11 @@ public class EnemyStatus : MobStatus
 
     public bool CanMove => actionState == ActionState.eMove;
 
+    public bool IsGetHit => actionState == ActionState.eGetHit;
+
     public bool IsNearDist => isNearDist;
 
     public bool IsMiddleDist => isMiddleDist;
-
-    public bool IsLongDist => !isNearDist && !isMiddleDist;
 
     public bool IsExecuteSpecialBehavior => isExecuteSpecialBehavior;
 
@@ -88,6 +90,22 @@ public class EnemyStatus : MobStatus
     protected override void Update()
     {
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
+
+        DownTimeCount();
+    }
+
+    protected virtual void DownTimeCount()
+    {
+        if (!IsGetHit) { return; }
+
+        downTimeCounter -= 1.0f * Time.deltaTime;
+
+        Debug.Log("now Time : " + downTimeCounter);
+
+        if(downTimeCounter <= 0.0f)
+        {
+            OnGetUp();
+        }
     }
 
     public void OnNearDistColliderEnter()
@@ -153,12 +171,26 @@ public class EnemyStatus : MobStatus
 
     public void OnGetHit()
     {
-        if(actionState == ActionState.eGetHit) { return; }
+        if(IsGetHit) { return; }
 
         actionState = ActionState.eGetHit;
+
+        if(getHitAnimationName != "GetHit")
+        {
+            downTimeCounter = downTime;
+        }
+
         animator.SetTrigger(getHitAnimationName);
 
         GetWeakPoint.OnWeakPointFinished();
+    }
+
+    protected void OnGetUp()
+    {
+        if (!IsGetHit) { return; }
+
+        animator.SetTrigger("GetUp");
+        actionState = ActionState.eNone;
     }
 
     public virtual void OnDamage(Collider collider, float damage)
