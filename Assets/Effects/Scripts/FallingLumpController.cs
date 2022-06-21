@@ -12,8 +12,11 @@ public class FallingLumpController : MonoBehaviour
 
     public void OnGenerateIceLance()
     {
-        if (!fallingLumpOwner || !fogParticleOwner || 
-            !followParticleOwner || !target) { return; }
+        if ( !fallingLumpOwner    || 
+             !fogParticleOwner    || 
+             !followParticleOwner ||
+             !explotionOwner      ||
+             !target) { return; }
 
         Vector3 pos;
         var fogRot = fogParticleOwner.gameObject.transform.rotation;
