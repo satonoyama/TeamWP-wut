@@ -19,6 +19,7 @@ public class FallingLump: MonoBehaviour
     private ParticleSystem explotionParticle = null;
     private bool isTracingTarget = false;
 
+    [SerializeField] private Collider hitDetector = null;
     private GameObject child = null;
     private int childrenNum = 0;
 
@@ -107,6 +108,9 @@ public class FallingLump: MonoBehaviour
 
             child.GetComponent<MeshRenderer>().material.color = new Color32(R, G, B, 0);
         }
+
+        WeakPointContainer.Instance.Add(hitDetector, true);
+        WeakPointContainer.Instance.GetWeakPoint(hitDetector).OnActive();
     }
 
     private void Update()
@@ -178,6 +182,9 @@ public class FallingLump: MonoBehaviour
 
     private void BreakIceLance()
     {
+        WeakPointContainer.Instance.Remove(hitDetector);
+        hitDetector.enabled = false;
+
         status = MoveState.eHit;
 
         if (fogParticle && fogParticle.isPlaying) { fogParticle.Stop(); }
@@ -186,6 +193,7 @@ public class FallingLump: MonoBehaviour
         for (int i = 0; i < childrenNum; i++)
         {
             child = transform.GetChild(i).gameObject;
+            child.GetComponent<MeshCollider>().isTrigger = false;
             child.GetComponent<Rigidbody>().useGravity = true;
         }
 

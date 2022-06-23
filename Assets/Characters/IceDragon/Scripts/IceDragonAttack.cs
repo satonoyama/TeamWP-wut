@@ -47,6 +47,8 @@ public class IceDragonAttack : EnemyAttack
         probSelectInfo.originalVal = probSelectInfo.probability;
 
         SelectUseAttack();
+
+        cooldownCounter = useAttackList[distState][useAtkListIndex].cooldown;
     }
 
     public override void SelectUseAttack()
@@ -62,8 +64,6 @@ public class IceDragonAttack : EnemyAttack
         probSelectInfo.probability = probSelectInfo.originalVal;
 
         base.SelectUseAttack();
-
-        cooldownCounter = useAttackList[distState][useAtkListIndex].cooldown;
     }
 
     [Serializable]

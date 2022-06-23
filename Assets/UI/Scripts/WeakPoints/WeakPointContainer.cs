@@ -32,12 +32,12 @@ public class WeakPointContainer : MonoBehaviour
         rectTransform = GetComponentInChildren<RectTransform>();
     }
 
-    public void Add(Collider collider)
+    public void Add(Collider collider, bool isColorChange = false)
     {
         if (weakPointMap.ContainsKey(collider)) { return; }
 
         var weakPoint = Instantiate(weakPointPrefab, transform);
-        weakPoint.Initialize(rectTransform, mainCamera, collider);
+        weakPoint.Initialize(rectTransform, mainCamera, collider, isColorChange);
         weakPointMap.Add(collider, weakPoint);
     }
 

@@ -1899,7 +1899,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3
+  m_Speed: 2.5
   m_Acceleration: 5
   avoidancePriority: 50
   m_AngularSpeed: 360
@@ -1944,18 +1944,18 @@ MonoBehaviour:
   status: {fileID: 181430758}
   cooldownCounter: 0
   probSelectInfo:
-    probability: 0.3
-    cooldown: 2
+    probability: 0.4
+    cooldown: 4
     originalVal: 0
     isSelect: 0
-  atkReSelectTime: 2
+  atkReSelectTime: 1
   nearAtkList:
   - collider:
     - {fileID: 521699700}
     power: 10
     attackName: 
     atkPossibleCollider: {fileID: 321135122}
-    cooldown: 1
+    cooldown: 0.5
     canStartOutOfRange: 0
     isDisableAfterHit: 0
     useAttackName: 0
@@ -1965,7 +1965,7 @@ MonoBehaviour:
     power: 5
     attackName: 
     atkPossibleCollider: {fileID: 673454367}
-    cooldown: 1
+    cooldown: 0.5
     canStartOutOfRange: 0
     isDisableAfterHit: 0
     useAttackName: 1
@@ -1975,7 +1975,7 @@ MonoBehaviour:
     power: 10
     attackName: 
     atkPossibleCollider: {fileID: 132252772}
-    cooldown: 3
+    cooldown: 2
     canStartOutOfRange: 0
     isDisableAfterHit: 0
     useAttackName: 2
@@ -2136,9 +2136,6 @@ MonoBehaviour:
   - generatePos: {fileID: 634521710}
     generatePosUpVal: 0
     isTracingTarget: 1
-  - generatePos: {fileID: 0}
-    generatePosUpVal: 10
-    isTracingTarget: 0
 --- !u!1 &195646737
 GameObject:
   m_ObjectHideFlags: 0

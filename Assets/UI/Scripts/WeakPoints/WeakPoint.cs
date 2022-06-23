@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class WeakPoint : MonoBehaviour
 {
     [SerializeField] private Image image;
+    [SerializeField] private Color colorToChange;
 
     private RectTransform parentRecTransform;
     private Camera _camera;
@@ -15,13 +16,17 @@ public class WeakPoint : MonoBehaviour
     private bool isScaleDown = false;
     private bool isActive = false;
 
-    public void Initialize(RectTransform parentRectTransform, Camera camera, Collider collider)
+    public void Initialize(RectTransform parentRectTransform, Camera camera, Collider collider, bool isColorChange = false)
     {
         parentRecTransform = parentRectTransform;
         _camera = camera;
         point = collider;
-
         point.enabled = false;
+
+        if(isColorChange)
+        {
+            image.color = colorToChange;
+        }
 
         image.enabled = false;
 
