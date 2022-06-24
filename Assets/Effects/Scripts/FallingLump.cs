@@ -26,6 +26,7 @@ public class FallingLump: MonoBehaviour
     [SerializeField] private float waitSeconds = 0.01f;
     private readonly int maxColorCount = 255;
 
+    [SerializeField] private float lifeSpan = 0.0f;
     private Vector3 waitPos = new();
     private Vector3 moveVec = new();
 
@@ -85,6 +86,9 @@ public class FallingLump: MonoBehaviour
             transform.rotation = rot;
         }
 
+        WeakPointContainer.Instance.Add(hitDetector, true);
+        WeakPointContainer.Instance.GetWeakPoint(hitDetector).OnActive();
+
         StartCoroutine(Transparent());
     }
 
@@ -108,9 +112,6 @@ public class FallingLump: MonoBehaviour
 
             child.GetComponent<MeshRenderer>().material.color = new Color32(R, G, B, 0);
         }
-
-        WeakPointContainer.Instance.Add(hitDetector, true);
-        WeakPointContainer.Instance.GetWeakPoint(hitDetector).OnActive();
     }
 
     private void Update()
@@ -144,13 +145,12 @@ public class FallingLump: MonoBehaviour
 
         if (CheckIsHit())
         {
-            if(explotionParticle)
-            {
-                explotionParticle.transform.position = transform.position;
-                explotionParticle.Play();
-            }
+            StopFallingLump();
+        }
 
-            StopIceLance();
+        if((lifeSpan -= Time.deltaTime) <= 0.0f)
+        {
+            BreakFallingLump();
         }
     }
 
@@ -180,46 +180,51 @@ public class FallingLump: MonoBehaviour
         moveVec *= moveSpeed;
     }
 
-    private void BreakIceLance()
+    private void BreakFallingLump()
     {
+        status = MoveState.eHit;
+
         WeakPointContainer.Instance.Remove(hitDetector);
         hitDetector.enabled = false;
-
-        status = MoveState.eHit;
 
         if (fogParticle && fogParticle.isPlaying) { fogParticle.Stop(); }
         if (followParticle && followParticle.isPlaying) { followParticle.Stop(); }
 
+        if (explotionParticle)
+        {
+            explotionParticle.transform.position = transform.position;
+            explotionParticle.Play();
+        }
+
         for (int i = 0; i < childrenNum; i++)
         {
             child = transform.GetChild(i).gameObject;
-            child.GetComponent<MeshCollider>().isTrigger = false;
             child.GetComponent<Rigidbody>().useGravity = true;
         }
 
         StartCoroutine(Transparent());
     }
 
-    private void StopIceLance()
+    private void StopFallingLump()
     {
         moveVec = Vector3.zero;
-        BreakIceLance();
+        BreakFallingLump();
     }
 
-    public void OnHitIceLance()
+    public void OnHitFallingLump()
     {
         if (!IsExecutable) { return; }
 
         target.Damage(power);
 
-        StopIceLance();
+        StopFallingLump();
     }
 
     public void OnShootingDown()
     {
         if (!IsExecutable) { return; }
 
-        BreakIceLance();
+        BreakFallingLump();
     }
 
     private IEnumerator Transparent()
@@ -240,7 +245,13 @@ public class FallingLump: MonoBehaviour
                 {
                     child.GetComponent<MeshRenderer>().material.color -= new Color32(0, 0, 0, 1);
 
-                    if(i >= maxColorCount - 1) { Destroy(gameObject); }
+                    if(i >= maxColorCount - 1) 
+                    {
+                        if (explotionParticle && explotionParticle.isPlaying) 
+                        { explotionParticle.Stop(); }
+
+                        Destroy(gameObject);
+                    }
                 }
             }
             yield return new WaitForSeconds(waitSeconds);

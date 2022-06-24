@@ -30,12 +30,7 @@ public class EnemyStatus : MobStatus
     protected bool isNearDist = false;
     protected bool isMiddleDist = false;
 
-    [SerializeField] protected float animationWaitTime = 0.0f;
-    [SerializeField] protected float slowlyAnimationSpeed = 0.0f;
     protected float defaultAnimationSpeed = 0.0f;
-
-    [SerializeField] protected float triggerHpRate = 0.0f;   // 特殊な行動を実行するHP割合
-    protected bool isExecuteSpecialBehavior = false;
 
     public MovementController GetTarget => target;
 
@@ -55,21 +50,6 @@ public class EnemyStatus : MobStatus
     public bool IsNearDist => isNearDist;
 
     public bool IsMiddleDist => isMiddleDist;
-
-    public bool IsExecuteSpecialBehavior => isExecuteSpecialBehavior;
-
-    // 特別な行動をするHPになっているか
-    protected bool CheckHp()
-    {
-        if (isExecuteSpecialBehavior) { return false; }
-
-        if (Hp <= (MaxHp * triggerHpRate))
-        {
-            return true;
-        }
-
-        return false;
-    }
 
     public EnemyWeakPoint GetWeakPoint { get; private set; }
 
@@ -154,7 +134,6 @@ public class EnemyStatus : MobStatus
     {
         actionState = ActionState.eMove;
         agent.isStopped = false;
-        animator.speed = defaultAnimationSpeed;
 
         // 移動しながら攻撃をするモンスターもいるので、
         // 攻撃可能な状態であれば弱点を有効にするようにしている
@@ -229,21 +208,18 @@ public class EnemyStatus : MobStatus
         GetWeakPoint.OnWeakPointFinished();
 
         WeakPointContainer.Instance.AllRemove();
+        FallingLumpContainer.Instance.AllRemove();
 
         // TODO : Tansition to Clear Scene
     }
 
-    public void OnPauseAnimation()
+    public virtual void OnSlowlyAnimation(float speed)
     {
-        animator.speed = slowlyAnimationSpeed;
-        StartCoroutine(AnimationWaitCoroutine());
+        animator.speed = speed;
     }
 
-    private IEnumerator AnimationWaitCoroutine()
+    public virtual void OnAnimSpeedDefault()
     {
-        yield return new WaitForSeconds(animationWaitTime);
-
         animator.speed = defaultAnimationSpeed;
-        GetWeakPoint.OnWeakPointFinished();
     }
 }
