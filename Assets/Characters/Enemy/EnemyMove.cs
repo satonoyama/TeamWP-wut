@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,7 +5,6 @@ using UnityEngine.AI;
 [RequireComponent(typeof(EnemyStatus))]
 public class EnemyMove : MonoBehaviour
 {
-    [SerializeField] protected MovementController target;
     [SerializeField] protected EnemyStatus status;
      protected NavMeshAgent agent;
 
@@ -23,13 +21,13 @@ public class EnemyMove : MonoBehaviour
 
     protected virtual void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        status = GetComponent<EnemyStatus>();
+        agent = GetComponentInChildren<NavMeshAgent>();
+        status = GetComponentInChildren<EnemyStatus>();
     }
 
     protected virtual void Update()
     {
-        UpdateMove(target.transform.position);
+        UpdateMove(status.GetTarget.transform.position);
     }
 
     protected virtual void UpdateMove(Vector3 position)
@@ -38,18 +36,21 @@ public class EnemyMove : MonoBehaviour
 
         agent.destination = position;
 
+        GenerateRunSmoke();
+    }
+
+    protected virtual void GenerateRunSmoke()
+    {
         if (!canGenerateParticle) { return; }
 
-        for(int i = 0; i < legObjects.Length; i++)
+        for (int i = 0; i < legObjects.Length; i++)
         {
             var pos = legObjects[i].transform.position;
-
-            Debug.DrawRay(pos, rayDir, Color.red);
 
             int hitCount = Physics.RaycastNonAlloc(pos, rayDir, _raycastHits, rayDist, raycastLayerMask);
 
             // ’n–Ê‚ÉG‚ê‚Ä‚È‚¢ê‡‚Í»šº‚ð”­¶‚³‚¹‚È‚¢
-            if(hitCount == 0) { continue; }
+            if (hitCount == 0) { continue; }
 
             // ‘«Œ³‚É»šº‚ð”­¶‚³‚¹‚é
             var dustSmoke = Instantiate(smoke, pos, Quaternion.identity);

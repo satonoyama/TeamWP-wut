@@ -6,12 +6,16 @@ public class PlayerStatus : MobStatus
 {
     [SerializeField] private float maxSp = 100.0f;
     [SerializeField] private float sp = 1.0f;
-
     [SerializeField] private float spHealValByTime = 1.0f;  // 1•b‚²‚Æ‚ÌSP‚Ì‰ñ•œ—Ê
+
+    [SerializeField] private float dmgWaitTime = 0.0f;
+    private float dmgWaitCounter = 0.0f;
 
     // SPŠÖŒW
     public float MaxSp => maxSp;
     public float Sp => sp;
+
+    private bool IsDamaged => dmgWaitCounter > 0.0f;
 
     protected override void Start()
     {
@@ -32,6 +36,15 @@ public class PlayerStatus : MobStatus
         UpdateHealSP();
     }
 
+    private void FixedUpdate()
+    {
+        if (!IsDamaged) { return; }
+
+        dmgWaitCounter -= Time.deltaTime;
+
+        if(dmgWaitCounter <= 0.0f) { dmgWaitCounter = 0.0f; }
+    }
+
     // ‚Ü‚¾ŽÀŒ±’†
     private void UpdateHealSP()
     {
@@ -39,7 +52,7 @@ public class PlayerStatus : MobStatus
 
         sp += Time.deltaTime * spHealValByTime;
 
-        Mathf.Clamp(sp, 0.0f, maxSp);
+        if(sp >= MaxSp) { sp = MaxSp; }
     }
 
     protected override void OnDie()
@@ -51,8 +64,10 @@ public class PlayerStatus : MobStatus
 
     public override void Damage(float damage)
     {
+        if (IsDamaged) { return; }
+
         base.Damage(damage);
 
-        //Debug.Log("HP : " + Hp);
+        dmgWaitCounter = dmgWaitTime;
     }
 }

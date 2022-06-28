@@ -29,15 +29,15 @@ public class WeakPointContainer : MonoBehaviour
     {
         if (instance) throw new Exception("WeakPoinContainer instance already exists.");
         instance = this;
-        rectTransform = GetComponent<RectTransform>();
+        rectTransform = GetComponentInChildren<RectTransform>();
     }
 
-    public void Add(Collider collider)
+    public void Add(Collider collider, bool isColorChange = false)
     {
         if (weakPointMap.ContainsKey(collider)) { return; }
 
         var weakPoint = Instantiate(weakPointPrefab, transform);
-        weakPoint.Initialize(rectTransform, mainCamera, collider);
+        weakPoint.Initialize(rectTransform, mainCamera, collider, isColorChange);
         weakPointMap.Add(collider, weakPoint);
     }
 
@@ -45,5 +45,15 @@ public class WeakPointContainer : MonoBehaviour
     {
         Destroy(weakPointMap[collider].gameObject);
         weakPointMap.Remove(collider);
+    }
+
+    public void AllRemove()
+    {
+        foreach(WeakPoint weakPoint in weakPointMap.Values)
+        {
+            Destroy(weakPoint.gameObject);
+        }
+
+        weakPointMap.Clear();
     }
 }

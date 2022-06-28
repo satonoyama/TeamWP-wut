@@ -68235,10 +68235,10 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.13333334
-    functionName: OnCollisionEnableFinished
+    functionName: OnSlowlyAnimation
     data: 
     objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
+    floatParameter: 0.5
     intParameter: 0
     messageOptions: 0
   - time: 0.16666667
@@ -68250,6 +68250,13 @@ AnimationClip:
     messageOptions: 0
   - time: 0.2
     functionName: OnStopAllParticle
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.9
+    functionName: OnAnimSpeedDefault
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

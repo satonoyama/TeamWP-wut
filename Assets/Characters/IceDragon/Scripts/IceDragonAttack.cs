@@ -9,88 +9,66 @@ public class IceDragonAttack : EnemyAttack
         eBite,          // 噛みつき
         eWingClaw,      // 翼爪
         eBreath,        // ブレス
+        eIceLance,      // 氷槍
         eFlyBreath,     // 飛行ブレス
     }
 
     public string AttackNameList(AttackNameEnum attack) => attackNameList[(int)attack];
-  
-    // 使おうとしている攻撃名取得
-    public string GetUseAtkName() => AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
 
-    [SerializeField] private IceDragonAtkColliderMap[] iceDragonAtkColliders;
-    [SerializeField] private AttackExecutionList[] executionList;
+    [SerializeField] private IceDragonAtkColliderMap[] nearAtkList;
+    [SerializeField] private IceDragonAtkColliderMap[] middleAtkList;
+    [SerializeField] private IceDragonAtkColliderMap[] longDistAtkList;
 
     // 攻撃アニメーションのトリガー用の文字列配列
-    private readonly string[] attackNameList = { "Bite", "WingClaw", "Breath", "FlyBreath" };
+    private readonly string[] attackNameList = { "Bite", "WingClaw", "Breath", "IceLance", "FlyBreath" };
 
     protected override void Start()
     {
         base.Start();
 
-        // 最初に使用する攻撃名
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-
-        for (int i = 0; i < iceDragonAtkColliders.Length; i++)
+        for (int i = 0; i < nearAtkList.Length; i++)
         {
-            string atkName = AttackNameList(iceDragonAtkColliders[i].useAttackName);
-            InitAttackColliders(iceDragonAtkColliders, i, atkName, useAtkName);
+            nearAtkList[i].attackName = AttackNameList(nearAtkList[i].useAttackName);
         }
-    }
+        InitAttackColliders(DistantStateEnum.eNear, nearAtkList);
 
-    public override void AttackIfPossible()
-    {
-        if (!status.CanAttack()) { return; }
-
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-
-        status.OnMoveFinished();
-        status.GoToAttackStateIfPossible(useAtkName);
-    }
-
-    public override void OnAttackStart()
-    {
-        base.OnAttackStart();
-
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-        OnAttackColliderStart(iceDragonAtkColliders, useAtkName);
-    }
-
-    public override void OnHitAttack(Collider collider)
-    {
-        base.OnHitAttack(collider);
-
-        var targetMob = collider.GetComponent<PlayerStatus>();
-
-        if (!targetMob) { return; }
-
-        targetMob.Damage(GetAttackPower(iceDragonAtkColliders));
-    }
-
-    public override void OnAttackFinished()
-    {
-        // 選択していたリストが最後まで到達した
-        if (++atkListIndex >= executionList[executionIndex].attackList.Length)
+        for(int i = 0; i < middleAtkList.Length; i++)
         {
-            atkListIndex = 0;
+            middleAtkList[i].attackName = AttackNameList(middleAtkList[i].useAttackName);
+        }
+        InitAttackColliders(DistantStateEnum.eMiddle, middleAtkList);
 
-            executionIndex = Random.Range(0, executionList.Length);
+        for (int i = 0; i < longDistAtkList.Length; i++)
+        {
+            longDistAtkList[i].attackName = AttackNameList(longDistAtkList[i].useAttackName);
+        }
+        InitAttackColliders(DistantStateEnum.eLong, longDistAtkList);
+
+        probSelectInfo.originalVal = probSelectInfo.probability;
+
+        SelectUseAttack();
+
+        cooldownCounter = useAttackList[distState][useAtkListIndex].cooldown;
+    }
+
+    public override void SelectUseAttack()
+    {
+        ColliderFinished();
+
+        if(IsSelectedByProbability())
+        {
+            useAtkName = AttackNameList(AttackNameEnum.eIceLance);
+            return;
         }
 
-        string useAtkName = AttackNameList(executionList[executionIndex].attackList[atkListIndex]);
-        FinishedAttackColliders(iceDragonAtkColliders, useAtkName);
+        probSelectInfo.probability = probSelectInfo.originalVal;
 
-        base.OnAttackFinished();
+        base.SelectUseAttack();
     }
 
     [Serializable]
     public class IceDragonAtkColliderMap : EnemyAtkColliderMap
     {
         public AttackNameEnum useAttackName;
-    }
-
-    [Serializable]
-    public class AttackExecutionList
-    {
-        public AttackNameEnum[] attackList;
     }
 }

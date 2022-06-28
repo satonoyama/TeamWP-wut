@@ -20,13 +20,23 @@ public class EnemyStatus : MobStatus
     }
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
+    protected float defaultAgentSpeed = 1.0f;
+    [SerializeField] protected float fastAgentSpeed = 1.0f;
 
-    [SerializeField] protected float triggerHpRate = 0.0f;   // 特殊な行動を実行するHP割合
-    protected bool isExecuteSpecialBehavior = false;
+    [SerializeField] protected MovementController target;
+    [SerializeField] protected float downTime = 1.0f;
+    protected float downTimeCounter = 0.0f;
+    protected string getHitAnimationName = "GetHit";
+    protected bool isNearDist = false;
+    protected bool isMiddleDist = false;
+
+    protected float defaultAnimationSpeed = 0.0f;
+
+    public MovementController GetTarget => target;
 
     public bool CanAttack()
     {
-        if(!IsAttackable ||
+        if(!IsAttackable || IsGetHit ||
            actionState == ActionState.eScream ||
            actionState == ActionState.eAttack) { return false; }
 
@@ -35,20 +45,11 @@ public class EnemyStatus : MobStatus
 
     public bool CanMove => actionState == ActionState.eMove;
 
-    public bool IsExecuteSpecialBehavior => isExecuteSpecialBehavior;
+    public bool IsGetHit => actionState == ActionState.eGetHit;
 
-    // 特別な行動をするHPになっているか
-    protected bool CheckHp()
-    {
-        if (isExecuteSpecialBehavior) { return false; }
+    public bool IsNearDist => isNearDist;
 
-        if (Hp <= (MaxHp * triggerHpRate))
-        {
-            return true;
-        }
-
-        return false;
-    }
+    public bool IsMiddleDist => isMiddleDist;
 
     public EnemyWeakPoint GetWeakPoint { get; private set; }
 
@@ -59,6 +60,9 @@ public class EnemyStatus : MobStatus
         GetWeakPoint = GetComponent<EnemyWeakPoint>();
         agent = GetComponent<NavMeshAgent>();
 
+        defaultAgentSpeed = agent.speed;
+        defaultAnimationSpeed = animator.speed;
+
         // 戦闘開始時のアニメーションに遷移
         OnScream();
     }
@@ -66,6 +70,56 @@ public class EnemyStatus : MobStatus
     protected override void Update()
     {
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
+
+        DownTimeCount();
+    }
+
+    protected virtual void DownTimeCount()
+    {
+        if (!IsGetHit) { return; }
+
+        downTimeCounter -= 1.0f * Time.deltaTime;
+
+        Debug.Log("now Time : " + downTimeCounter);
+
+        if(downTimeCounter <= 0.0f)
+        {
+            OnGetUp();
+        }
+    }
+
+    public void OnNearDistColliderEnter()
+    {
+        isNearDist = true;
+        isMiddleDist = false;
+    }
+
+    public void OnNearDistColliderExit()
+    {
+        isNearDist = false;
+        isMiddleDist = true;
+    }
+
+    public void OnMiddleDistColliderEnter()
+    {
+        isNearDist = false;
+        isMiddleDist = true;
+    }
+
+    public void OnMiddleDistColliderExit()
+    {
+        isNearDist = false;
+        isMiddleDist = false;
+    }
+
+    public void OnTracingSpeedUp()
+    {
+        agent.speed = fastAgentSpeed;
+    }
+
+    public void OnTracingSpeedDefault()
+    {
+        agent.speed = defaultAgentSpeed;
     }
 
     public virtual void OnScream()
@@ -85,7 +139,7 @@ public class EnemyStatus : MobStatus
         // 攻撃可能な状態であれば弱点を有効にするようにしている
         if (!CanAttack()) { return; }
 
-        GetWeakPoint.OnCollisionEnable();
+        GetWeakPoint.OnWeakPointStart();
     }
 
     public void OnMoveFinished()
@@ -96,27 +150,53 @@ public class EnemyStatus : MobStatus
 
     public void OnGetHit()
     {
-        if(actionState == ActionState.eGetHit) { return; }
+        if(IsGetHit) { return; }
 
         actionState = ActionState.eGetHit;
-        animator.SetTrigger("GetHit");
+
+        if(getHitAnimationName != "GetHit")
+        {
+            downTimeCounter = downTime;
+        }
+
+        animator.SetTrigger(getHitAnimationName);
+
+        GetWeakPoint.OnWeakPointFinished();
+    }
+
+    protected void OnGetUp()
+    {
+        if (!IsGetHit) { return; }
+
+        animator.SetTrigger("GetUp");
+        actionState = ActionState.eNone;
+    }
+
+    public virtual void OnDamage(Collider collider, float damage)
+    {
+        if(GetWeakPoint.IsExecution)
+        {
+            GetWeakPoint.OnHitPlayerAttack(collider);
+
+            if(GetWeakPoint.Hp() <= 0.0f)
+            {
+                OnGetHit();
+            }
+        }
+
+        Damage(damage);
     }
 
     public override void Damage(float damage)
     {
-        base.Damage(damage);
+        float damageVal = damage;
 
-        if(GetWeakPoint.IsExecution)
+        if(GetWeakPoint.IsHitWeakPoint)
         {
-            GetWeakPoint.Damage(damage);
-
-            // ダメージを受けた結果、弱点のHPが無くなった場合は怯む
-            if(!GetWeakPoint.IsColliderEnable())
-            {
-                OnGetHit();
-                GetWeakPoint.OnCollisionEnableFinished();
-            }
+            damageVal *= 2.0f;
         }
+
+        base.Damage(damageVal);
     }
 
     protected override void OnDie()
@@ -125,14 +205,21 @@ public class EnemyStatus : MobStatus
 
         OnMoveFinished();
 
-        // TODO : あとで消滅させるときに工夫を入れる
-        //        今はとりあえず、５秒後に消すだけにしている
-        //StartCoroutine(DestroyCoroutine());
+        GetWeakPoint.OnWeakPointFinished();
+
+        WeakPointContainer.Instance.AllRemove();
+        FallingLumpContainer.Instance.AllRemove();
+
+        // TODO : Tansition to Clear Scene
     }
 
-    private IEnumerator DestroyCoroutine()
+    public virtual void OnSlowlyAnimation(float speed)
     {
-        yield return new WaitForSeconds(5);
-        Destroy(gameObject);
+        animator.speed = speed;
+    }
+
+    public virtual void OnAnimSpeedDefault()
+    {
+        animator.speed = defaultAnimationSpeed;
     }
 }

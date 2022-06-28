@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class WeakPoint : MonoBehaviour
 {
     [SerializeField] private Image image;
+    [SerializeField] private Color colorToChange;
 
     private RectTransform parentRecTransform;
     private Camera _camera;
@@ -15,13 +16,17 @@ public class WeakPoint : MonoBehaviour
     private bool isScaleDown = false;
     private bool isActive = false;
 
-    public void Initialize(RectTransform parentRectTransform, Camera camera, Collider collider)
+    public void Initialize(RectTransform parentRectTransform, Camera camera, Collider collider, bool isColorChange = false)
     {
         parentRecTransform = parentRectTransform;
         _camera = camera;
         point = collider;
-
         point.enabled = false;
+
+        if(isColorChange)
+        {
+            image.color = colorToChange;
+        }
 
         image.enabled = false;
 
@@ -55,38 +60,51 @@ public class WeakPoint : MonoBehaviour
 
     private void BillboardByCamera()
     {
+        if(!IsFrontCamera())
+        {
+            image.enabled = false;
+            return;
+        }
+
+        image.enabled = true;
+
         var screenPoint = _camera.WorldToScreenPoint(point.transform.position);
-
-        var cameraDir = _camera.transform.forward;
-
-        var targetDir = point.transform.position - _camera.transform.position;
-
-        var isFront = Vector3.Dot(targetDir, cameraDir) > 0;
-
-        image.enabled = isFront;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRecTransform, screenPoint, null, out Vector2 localPoint);
 
         image.gameObject.transform.localPosition = localPoint;
     }
 
+    private bool IsFrontCamera()
+    {
+        var cameraDir = _camera.transform.forward;
+
+        var targetDir = point.transform.position - _camera.transform.position;
+
+        var isFront = Vector3.Dot(targetDir, cameraDir) > 0;
+
+        return isFront;
+    }
+
     public void OnActive()
     {
         isActive = true;
 
-        image.enabled = true;
-
         scale = initScale;
 
         isScaleDown = true;
+
+        if (!IsFrontCamera()) { return; }
+
+        image.enabled = true;
     }
 
     public void OnActiveFinished()
     {
         isActive = false;
 
-        image.enabled = false;
-
         isScaleDown = false;
+
+        image.enabled = false;
     }
 }
