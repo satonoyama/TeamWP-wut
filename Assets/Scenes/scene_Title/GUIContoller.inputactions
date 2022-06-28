@@ -1,0 +1,34 @@
+{
+    "name": "GUIContoller",
+    "maps": [
+        {
+            "name": "Title",
+            "id": "f8472b0f-50e5-4a6a-bd7d-ff963f70037c",
+            "actions": [
+                {
+                    "name": "Enter",
+                    "type": "Button",
+                    "id": "7fbe883a-8d12-436c-94f8-52d98155e0d2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4ab0ae0c-3134-476c-ae86-6f5b8ca3420d",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Enter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
