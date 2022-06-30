@@ -1,0 +1,34 @@
+{
+    "name": "TestControls",
+    "maps": [
+        {
+            "name": "TestMagic",
+            "id": "1a776de9-8564-4c69-9b02-a638b1a03aa4",
+            "actions": [
+                {
+                    "name": "ADS",
+                    "type": "Button",
+                    "id": "0a526fc0-2dc1-40c2-92b1-94ee4e127e65",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "3c8d5c42-8974-40f9-848d-66f1549d9cd7",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ADS",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -220,6 +220,7 @@ public class FallingLump: MonoBehaviour
         StopFallingLump();
     }
 
+    //TODO: ’…’e‚µ‚½‚ç‚±‚êŒÄ‚Ô
     public void OnShootingDown()
     {
         if (!IsExecutable) { return; }
