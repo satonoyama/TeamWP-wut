@@ -64,6 +64,9 @@ public class FallingLumpContainer : MonoBehaviour
             info.fogParticlePrefab = fog;
             info.followParticlePrefab = follow;
             info.explotionPrefab = explotion;
+            info.generateSE = fallingLumInfo.generateSE;
+            info.explotionSE = fallingLumInfo.explotionSE;
+            info.followSE = fallingLumInfo.followSE;
             info.target = fallingLumInfo.target;
 
             fallingLumpMap.Add(i, info);
@@ -86,6 +89,11 @@ public class FallingLumpContainer : MonoBehaviour
                 fallingLumpMap[i].explotionPrefab,
                 fallingLumpMap[i].fogParticlePrefab,
                 fallingLumpMap[i].followParticlePrefab);
+
+            fallingLump.SetSE(
+                fallingLumpMap[i].generateSE,
+                fallingLumpMap[i].explotionSE,
+                fallingLumpMap[i].followSE);
 
             fallingLump.Initialize(
                 fallingLumInfo.target, pos,
@@ -119,6 +127,9 @@ public class FallingLumpContainer : MonoBehaviour
         [SerializeField] public ParticleSystem fogParticlePrefab = null;
         [SerializeField] public ParticleSystem followParticlePrefab = null;
         [SerializeField] public ParticleSystem explotionPrefab = null;
+        [SerializeField] public AudioSource followSE = null;
+        [SerializeField] public AudioSource generateSE = null;
+        [SerializeField] public AudioSource explotionSE = null;
         [SerializeField] public PlayerStatus target = null;
     }
 

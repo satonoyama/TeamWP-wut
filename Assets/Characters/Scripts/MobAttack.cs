@@ -15,6 +15,8 @@ public class MobAttack : MonoBehaviour
 
     public virtual void OnAttackStart() {}
 
+    public virtual void OnPlayAttackSound() {}
+
     public virtual void OnHitAttack(Collider collider)
     {
         if (isHit) { return; }
@@ -25,6 +27,7 @@ public class MobAttack : MonoBehaviour
     public abstract class AttackColliderMap
     {
         public Collider[] collider;
+        public AudioSource[] se;
         public float power = 1.0f;
         [HideInInspector] public string attackName;
     }

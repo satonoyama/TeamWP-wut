@@ -24,6 +24,14 @@ public class EffectController : MonoBehaviour
         var rot = effects[(int)effectID].posObject.transform.rotation;
 
         effects[(int)effectID].particle.transform.SetPositionAndRotation(pos, rot);
+
+        for (int i = 0; i < effects[(int)effectID].se.Length; i++)
+        {
+            if (effects[(int)effectID].se[i])
+            {
+                effects[(int)effectID].se[i].transform.position = pos;
+            }
+        }
     }
 
     public void OnPlayParticle(EffectID id)
@@ -46,6 +54,14 @@ public class EffectController : MonoBehaviour
 
         effects[(int)id].particle.Play();
 
+        for(int i = 0; i < effects[(int)id].se.Length; i++)
+        {
+            if (effects[(int)id].se[i])
+            {
+                effects[(int)id].se[i].Play();
+            }
+        }
+
         isStop = false;
     }
 
@@ -55,6 +71,8 @@ public class EffectController : MonoBehaviour
             !effects[(int)effectID].particle.isPlaying) { return; }
 
         effects[(int)effectID].particle.Stop();
+
+        OnStopSE((int)effectID);
 
         isStop = true;
     }
@@ -66,9 +84,25 @@ public class EffectController : MonoBehaviour
             if (!effects[i].particle.isPlaying) { continue; }
 
             effects[i].particle.Stop();
+
+            OnStopSE(i);
         }
 
         isStop = true;
+    }
+
+    private void OnStopSE(int id)
+    {
+        for (int i = 0; i < effects[id].se.Length; i++)
+        {
+            if (!effects[id].se[i]) { continue; }
+
+            if (effects[id].se[i].loop &&
+                effects[id].se[i].isPlaying)
+            {
+                effects[id].se[i].Stop();
+            }
+        }
     }
 
     [Serializable]
@@ -77,6 +111,7 @@ public class EffectController : MonoBehaviour
         public EffectID id;
         public ParticleSystem particle = null;
         public GameObject posObject = null;
+        public AudioSource[] se = null;
         public bool isSettingID = true;
     }
 }

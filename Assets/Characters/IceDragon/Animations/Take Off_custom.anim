@@ -106041,6 +106041,13 @@ AnimationClip:
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
+  - time: 0.56666666
+    functionName: OnPlayFlyingSE
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0.5
+    intParameter: 0
+    messageOptions: 0
   - time: 1.5
     functionName: OnPlayParticle
     data: 
@@ -106048,11 +106055,25 @@ AnimationClip:
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
+  - time: 1.5
+    functionName: OnPlayFlyingSE
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0.5
+    intParameter: 0
+    messageOptions: 0
   - time: 1.6666666
     functionName: OnTakeOff
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 2.3
+    functionName: OnPlayFlyingSE
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0.5
     intParameter: 0
     messageOptions: 0
   - time: 2.6666667

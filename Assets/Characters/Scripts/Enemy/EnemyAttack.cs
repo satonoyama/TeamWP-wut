@@ -233,6 +233,17 @@ public abstract class EnemyAttack : MobAttack
         cooldownCounter = useAttackList[distState][useAtkListIndex].cooldown;
     }
 
+    public override void OnPlayAttackSound()
+    {
+        int maxSeNum = useAttackList[distState][useAtkListIndex].se.Length;
+        for (int i = 0; i < maxSeNum; i++)
+        {
+            if (!useAttackList[distState][useAtkListIndex].se[i]) { continue; }
+
+            useAttackList[distState][useAtkListIndex].se[i].Play();
+        }
+    }
+
     public override void OnHitAttack(Collider collider)
     {
         base.OnHitAttack(collider);

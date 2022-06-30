@@ -20,8 +20,10 @@ public class EnemyStatus : MobStatus
     }
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
-    protected float defaultAgentSpeed = 1.0f;
+
     [SerializeField] protected float fastAgentSpeed = 1.0f;
+    protected float defaultAgentSpeed = 1.0f;
+    protected float defaultAnimationSpeed = 0.0f;
 
     [SerializeField] protected MovementController target;
     [SerializeField] protected float downTime = 1.0f;
@@ -29,8 +31,6 @@ public class EnemyStatus : MobStatus
     protected string getHitAnimationName = "GetHit";
     protected bool isNearDist = false;
     protected bool isMiddleDist = false;
-
-    protected float defaultAnimationSpeed = 0.0f;
 
     public MovementController GetTarget => target;
 

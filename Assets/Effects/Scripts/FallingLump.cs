@@ -17,6 +17,9 @@ public class FallingLump: MonoBehaviour
     private ParticleSystem fogParticle = null;
     private ParticleSystem followParticle = null;
     private ParticleSystem explotionParticle = null;
+    private AudioSource followSE = null;
+    private AudioSource generateSE = null;
+    private AudioSource explotionSE = null;
     private bool isTracingTarget = false;
 
     [SerializeField] private Collider hitDetector = null;
@@ -61,6 +64,13 @@ public class FallingLump: MonoBehaviour
         followParticle = follow;
     }
 
+    public void SetSE(AudioSource generate, AudioSource explotion, AudioSource follow)
+    {
+        generateSE = generate;
+        explotionSE = explotion;
+        followSE = follow;
+    }
+
     public void Initialize(PlayerStatus player, Vector3 waitPosition, bool isTracing)
     {
         target = player;
@@ -84,6 +94,18 @@ public class FallingLump: MonoBehaviour
         {
             var rot = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
             transform.rotation = rot;
+        }
+
+        if(generateSE)
+        {
+            generateSE.transform.position = waitPos;
+            generateSE.Play();
+        }
+
+        if(followSE)
+        {
+            followSE.transform.position = waitPos;
+            followSE.Play();
         }
 
         WeakPointContainer.Instance.Add(hitDetector, true);
@@ -143,6 +165,11 @@ public class FallingLump: MonoBehaviour
             followParticle.transform.position = transform.position;
         }
 
+        if (followSE && followSE.isPlaying)
+        {
+            followSE.transform.position = transform.position;
+        }
+
         if (CheckIsHit())
         {
             StopFallingLump();
@@ -174,6 +201,11 @@ public class FallingLump: MonoBehaviour
             moveVec = Vector3.down;
         }
 
+        if (generateSE)
+        {
+            generateSE.Stop();
+        }
+
         rayDir = moveVec;
 
         // Move Speed Up or Down
@@ -194,6 +226,12 @@ public class FallingLump: MonoBehaviour
         {
             explotionParticle.transform.position = transform.position;
             explotionParticle.Play();
+        }
+
+        if(explotionSE)
+        {   
+            explotionSE.transform.position = transform.position;
+            explotionSE.Play();
         }
 
         for (int i = 0; i < childrenNum; i++)
@@ -249,6 +287,8 @@ public class FallingLump: MonoBehaviour
                     {
                         if (explotionParticle && explotionParticle.isPlaying) 
                         { explotionParticle.Stop(); }
+
+                        if (followSE) { followSE.Stop(); }
 
                         Destroy(gameObject);
                     }

@@ -10,6 +10,7 @@ public class EnemyMove : MonoBehaviour
 
     [SerializeField] protected GameObject[] legObjects;
     [SerializeField] protected ParticleSystem smoke;
+    [SerializeField] protected AudioSource runSE = null;
     protected bool canGenerateParticle = false;
 
     [SerializeField] protected LayerMask raycastLayerMask;
@@ -63,5 +64,12 @@ public class EnemyMove : MonoBehaviour
     public void OnCanGenerateRunSmoke()
     {
         canGenerateParticle = true;
+    }
+
+    public void OnPlayRunSE()
+    {
+        if (!runSE) { return; }
+
+        runSE.Play();
     }
 }

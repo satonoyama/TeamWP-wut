@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class IceDragonStatus : EnemyStatus
 {
+    [SerializeField] private AudioSource flyingSE = null;
+    [SerializeField] private AudioSource landingSE = null;
+
     private bool isLanding = false;
     private bool isDistCnecked = false;
 
@@ -13,6 +16,21 @@ public class IceDragonStatus : EnemyStatus
     protected override void Update()
     {
         base.Update();
+    }
+
+    public void OnPlayFlyingSE(float vol = 1.0f)
+    {
+        if (!flyingSE) { return; }
+
+        flyingSE.volume = vol;
+        flyingSE.Play();
+    }
+
+    public void OnPlayLandingSE()
+    {
+        if (!landingSE) { return; }
+
+        landingSE.Play();
     }
 
     public override void OnScream()
