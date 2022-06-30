@@ -89,6 +89,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""test"",
+                    ""type"": ""Button"",
+                    ""id"": ""4b6f3fa4-c48b-48f2-9e98-53842955daa7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -366,6 +375,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0f059528-9103-4485-8ad1-df3bbca45c5b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Press"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard and Mouse"",
+                    ""action"": ""test"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -392,6 +412,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Movement_LeanRight = m_Movement.FindAction("Lean Right", throwIfNotFound: true);
         m_Movement_Sprint = m_Movement.FindAction("Sprint", throwIfNotFound: true);
         m_Movement_Look = m_Movement.FindAction("Look", throwIfNotFound: true);
+        m_Movement_test = m_Movement.FindAction("test", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -458,6 +479,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Movement_LeanRight;
     private readonly InputAction m_Movement_Sprint;
     private readonly InputAction m_Movement_Look;
+    private readonly InputAction m_Movement_test;
     public struct MovementActions
     {
         private @PlayerControls m_Wrapper;
@@ -469,6 +491,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @LeanRight => m_Wrapper.m_Movement_LeanRight;
         public InputAction @Sprint => m_Wrapper.m_Movement_Sprint;
         public InputAction @Look => m_Wrapper.m_Movement_Look;
+        public InputAction @test => m_Wrapper.m_Movement_test;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -499,6 +522,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Look.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnLook;
                 @Look.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnLook;
                 @Look.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnLook;
+                @test.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnTest;
+                @test.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnTest;
+                @test.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnTest;
             }
             m_Wrapper.m_MovementActionsCallbackInterface = instance;
             if (instance != null)
@@ -524,6 +550,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
+                @test.started += instance.OnTest;
+                @test.performed += instance.OnTest;
+                @test.canceled += instance.OnTest;
             }
         }
     }
@@ -555,5 +584,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnLeanRight(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnTest(InputAction.CallbackContext context);
     }
 }
