@@ -21,6 +21,10 @@ public class EnemyStatus : MobStatus
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
 
+    [SerializeField] protected AudioSource getUpSE = null;
+    [SerializeField] protected AudioSource dieSE = null;
+    [SerializeField] protected float dieSEVolumeDownVal = 1.0f;
+
     [SerializeField] protected float fastAgentSpeed = 1.0f;
     protected float defaultAgentSpeed = 1.0f;
     protected float defaultAnimationSpeed = 0.0f;
@@ -44,7 +48,7 @@ public class EnemyStatus : MobStatus
         return true;
     }
 
-    public bool CanMove => actionState == ActionState.eMove;
+    public bool CanMove => actionState == ActionState.eMove && !agent.isStopped;
 
     protected bool IsGetHit => actionState == ActionState.eGetHit;
 
@@ -75,6 +79,8 @@ public class EnemyStatus : MobStatus
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
 
         DownTimeCount();
+
+        DieSEVolumeDown();
     }
 
     protected virtual void DownTimeCount()
@@ -87,6 +93,33 @@ public class EnemyStatus : MobStatus
         {
             OnGetUp();
         }
+    }
+
+    protected virtual void DieSEVolumeDown()
+    {
+        if (!dieSE.isPlaying) { return; }
+
+        dieSE.volume -= dieSEVolumeDownVal * Time.deltaTime;
+
+        if (dieSE.volume <= 0.0f)
+        {
+            dieSE.Stop();
+        }
+    }
+
+    public void OnPlayGetUpSE(float volume = 1.0f)
+    {
+        if (!getUpSE) { return; }
+
+        getUpSE.volume = volume;
+        getUpSE.Play();
+    }
+
+    public void OnPlayDieSE()
+    {
+        if (!dieSE) { return; }
+
+        dieSE.Play();
     }
 
     public void OnNearDistColliderEnter()
@@ -208,8 +241,6 @@ public class EnemyStatus : MobStatus
         {
             damageVal *= 2.0f;
         }
-
-        Debug.Log(damageVal);
 
         base.Damage(damageVal);
     }

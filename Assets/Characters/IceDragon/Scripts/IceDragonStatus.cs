@@ -3,15 +3,31 @@ using UnityEngine;
 
 public class IceDragonStatus : EnemyStatus
 {
+    public enum IceDragonGetHitState
+    {
+        eGetHit,
+        eShootingDown
+    }
+    private IceDragonGetHitState getHitState = IceDragonGetHitState.eGetHit;
+
+    [SerializeField] private AudioSource[] getHitSEList;
     [SerializeField] private AudioSource flyingSE = null;
     [SerializeField] private AudioSource landingSE = null;
 
     private bool isLanding = true;
     private bool isDistCnecked = false;
 
-    private readonly string[] getHitAnimeTriggerNameList = { "ShootingDown", "GetHit"};
+    private readonly string[] getHitAnimeTriggerNameList = { "GetHit", "ShootingDown" };
 
     private string GetHitAnimeTriggerName(int id) => getHitAnimeTriggerNameList[id];
+
+    public void OnPlayGetHitSE(IceDragonGetHitState id)
+    {
+        if (!getHitSEList[(int)id] ||
+             getHitSEList[(int)id].isPlaying) { return; }
+
+        getHitSEList[(int)id].Play();
+    }
 
     public void OnPlayFlyingSE(float vol = 1.0f)
     {
@@ -30,14 +46,16 @@ public class IceDragonStatus : EnemyStatus
 
     public void OnTakeOff()
     {
+        getHitState = IceDragonGetHitState.eShootingDown;
         isLanding = false;
-        getHitAnimationName = GetHitAnimeTriggerName(Convert.ToInt32(isLanding));
+        getHitAnimationName = GetHitAnimeTriggerName((int)getHitState);
     }
 
     public void OnLanding()
     {
+        getHitState = IceDragonGetHitState.eGetHit;
         isLanding = true;
-        getHitAnimationName = GetHitAnimeTriggerName(Convert.ToInt32(isLanding));
+        getHitAnimationName = GetHitAnimeTriggerName((int)getHitState);
     }
 
     public void OnCheckLongDist()
