@@ -96,7 +96,8 @@ public class FallingLumpContainer : MonoBehaviour
                 fallingLumpMap[i].followSE);
 
             fallingLump.Initialize(
-                fallingLumInfo.target, pos,
+                fallingLumInfo.target, 
+                fallingLumInfo.owner, pos,
                 fallingLumps[i].isTracingTarget);
         }
     }
@@ -131,6 +132,7 @@ public class FallingLumpContainer : MonoBehaviour
         [SerializeField] public AudioSource generateSE = null;
         [SerializeField] public AudioSource explotionSE = null;
         [SerializeField] public PlayerStatus target = null;
+        [SerializeField] public EnemyStatus owner = null;
     }
 
     [Serializable]

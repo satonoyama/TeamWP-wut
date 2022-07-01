@@ -14,6 +14,7 @@ public class FallingLump: MonoBehaviour
     [SerializeField] private float power = 1.0f;
     [SerializeField] private float moveSpeed = 1.0f;
     private PlayerStatus target = null;
+    private EnemyStatus owner = null;
     private ParticleSystem fogParticle = null;
     private ParticleSystem followParticle = null;
     private ParticleSystem explotionParticle = null;
@@ -71,9 +72,21 @@ public class FallingLump: MonoBehaviour
         followSE = follow;
     }
 
-    public void Initialize(PlayerStatus player, Vector3 waitPosition, bool isTracing)
+    private void SetChildrenColor(byte A)
+    {
+        Color32 color = child.GetComponent<MeshRenderer>().material.color;
+        byte R, G, B;
+        R = color.r;
+        G = color.g;
+        B = color.b;
+
+        child.GetComponent<MeshRenderer>().material.color = new Color32(R, G, B, A);
+    }
+
+    public void Initialize(PlayerStatus player, EnemyStatus myOwner, Vector3 waitPosition, bool isTracing)
     {
         target = player;
+        owner = myOwner;
         waitPos = waitPosition;
 
         isTracingTarget = isTracing;
@@ -119,26 +132,24 @@ public class FallingLump: MonoBehaviour
         Transform children = gameObject.GetComponentInChildren<Transform>();
         childrenNum = children.childCount - 1;
 
-        Color32 color;
-        byte R, G, B;
-
         for (int i = 0; i < childrenNum; i++)
         {
             child = transform.GetChild(i).gameObject;
 
-            color = child.GetComponent<MeshRenderer>().material.color;
-
-            R = color.r;
-            G = color.g;
-            B = color.b;
-
-            child.GetComponent<MeshRenderer>().material.color = new Color32(R, G, B, 0);
+            SetChildrenColor(0);
+            child.GetComponent<MeshCollider>().enabled = false;
         }
     }
 
     private void Update()
     {
         if (!IsExecutable) { return; }
+
+        if(owner.IsDie)
+        {
+            StopFallingLump();
+            return;
+        }
 
         UpdateMove();
 
@@ -216,8 +227,11 @@ public class FallingLump: MonoBehaviour
     {
         status = MoveState.eHit;
 
-        WeakPointContainer.Instance.Remove(hitDetector);
-        hitDetector.enabled = false;
+        if(WeakPointContainer.Instance.GetWeakPoint(hitDetector))
+        {
+            WeakPointContainer.Instance.Remove(hitDetector);
+            hitDetector.enabled = false;
+        }
 
         if (fogParticle && fogParticle.isPlaying) { fogParticle.Stop(); }
         if (followParticle && followParticle.isPlaying) { followParticle.Stop(); }
@@ -237,7 +251,11 @@ public class FallingLump: MonoBehaviour
         for (int i = 0; i < childrenNum; i++)
         {
             child = transform.GetChild(i).gameObject;
+            
+            SetChildrenColor(255);
+            
             child.GetComponent<Rigidbody>().useGravity = true;
+            child.GetComponent<MeshCollider>().enabled = true;
         }
 
         StartCoroutine(Transparent());
@@ -258,10 +276,13 @@ public class FallingLump: MonoBehaviour
         StopFallingLump();
     }
 
-    //TODO: ’…’e‚µ‚½‚ç‚±‚êŒÄ‚Ô
-    public void OnShootingDown()
+    public void OnShootingDown(GameObject magicObj)
     {
         if (!IsExecutable) { return; }
+
+        var magic = magicObj.GetComponent<MagicalFX.MagicInfo>();
+
+        if (!magic) { return; }
 
         BreakFallingLump();
     }

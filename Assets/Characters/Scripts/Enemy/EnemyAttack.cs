@@ -265,9 +265,15 @@ public abstract class EnemyAttack : MobAttack
         base.OnAttackFinished();
 
         status.GetWeakPoint.OnWeakPointFinished();
-        status.GoToNormalStateIfPossible();
 
         SelectUseAttack();
+    }
+
+    public virtual void OnAttackFinishedByGetHit()
+    {
+        cooldownCounter = useAttackList[distState][useAtkListIndex].cooldown;
+
+        OnAttackFinished();
     }
 
     public abstract class EnemyAtkColliderMap : AttackColliderMap

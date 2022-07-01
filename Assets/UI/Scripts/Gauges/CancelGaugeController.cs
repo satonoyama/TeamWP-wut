@@ -3,6 +3,9 @@ using UnityEngine;
 public class CancelGaugeController : FillerController
 {
     [SerializeField] private EnemyWeakPoint weakPoint;
+    private float maxWeakPointHP = 0.0f;
+
+    public void SetMaxWeakPointHP(float max) => maxWeakPointHP = max;
 
     private void Update()
     {
@@ -12,6 +15,6 @@ public class CancelGaugeController : FillerController
             return;
         }
 
-        UpdateGauge(image, weakPoint.Hp(), weakPoint.MaxHp());
+        UpdateGauge(image, weakPoint.Hp(), maxWeakPointHP);
     }
 }

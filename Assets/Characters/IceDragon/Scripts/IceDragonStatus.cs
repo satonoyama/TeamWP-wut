@@ -6,17 +6,12 @@ public class IceDragonStatus : EnemyStatus
     [SerializeField] private AudioSource flyingSE = null;
     [SerializeField] private AudioSource landingSE = null;
 
-    private bool isLanding = false;
+    private bool isLanding = true;
     private bool isDistCnecked = false;
 
     private readonly string[] getHitAnimeTriggerNameList = { "ShootingDown", "GetHit"};
 
     private string GetHitAnimeTriggerName(int id) => getHitAnimeTriggerNameList[id];
-
-    protected override void Update()
-    {
-        base.Update();
-    }
 
     public void OnPlayFlyingSE(float vol = 1.0f)
     {
@@ -33,16 +28,6 @@ public class IceDragonStatus : EnemyStatus
         landingSE.Play();
     }
 
-    public override void OnScream()
-    {
-        getHitAnimationName = GetHitAnimeTriggerName(Convert.ToInt32(isLanding));
-
-        isLanding = false;
-
-        base.OnScream();
-        GoToNormalStateIfPossible();
-    }
-
     public void OnTakeOff()
     {
         isLanding = false;
@@ -52,6 +37,7 @@ public class IceDragonStatus : EnemyStatus
     public void OnLanding()
     {
         isLanding = true;
+        getHitAnimationName = GetHitAnimeTriggerName(Convert.ToInt32(isLanding));
     }
 
     public void OnCheckLongDist()
@@ -77,7 +63,7 @@ public class IceDragonStatus : EnemyStatus
     public override void GoToNormalStateIfPossible()
     {
         // Å´ Ç±ÇÍÇ™Ç»Ç¢Ç∆íÖó§íÜÇ…éüÇÃçUåÇÇÇµÇƒÇµÇ‹Ç§
-        if (isLanding) { return; }
+        if (!isLanding) { return; }
 
         base.GoToNormalStateIfPossible();
     }

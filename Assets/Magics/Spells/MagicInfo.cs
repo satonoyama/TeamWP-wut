@@ -15,6 +15,7 @@ namespace MagicalFX
         [SerializeField] float otherEffectDelay;
 
         public float Delay { get {return delay;} }
+        public float Power { get { return firePower; } }
         public float OtherEffectDelay { get {return otherEffectDelay;} }
     }
 }

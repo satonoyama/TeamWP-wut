@@ -7,16 +7,18 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     protected Dictionary<string, WeakPointColliderMap> weakPointList = new();
     
     [SerializeField] protected EnemyAttack attack;
+    [SerializeField] protected CancelGaugeController gaugeController;
 
     protected Collider hitCollider = null;
     protected string useAtkName;
     protected bool isExecution = false;
+    protected bool enableWeakPoint = false;
     protected bool isHitWeakPoint = false;
 
     public bool IsExecution => isExecution;
 
-    public bool IsHitWeakPoint => IsHitWeakPoint;
-
+    public bool IsHitWeakPoint => isHitWeakPoint;
+    
     public void SetHitCollider(Collider collider) => hitCollider = collider;
 
     // １か所でも判定が有効になっていればTrueを返す
@@ -42,22 +44,6 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     //
     // ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
-    // 判定が有効になっている部位の総最大HP取得
-    public virtual float MaxHp()
-    {
-        float maxHp = 0.0f;
-
-        int maxRange = weakPointList[useAtkName].colliders.Length;
-        for (int i = 0; i < maxRange; i++)
-        {
-            if (!weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
-
-            maxHp += weakPointList[useAtkName].maxHp;
-        }
-
-        return maxHp;
-    }
-
     // 判定が有効になっている部位の総HP取得
     public virtual float Hp()
     {
@@ -68,7 +54,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         {
             if (!weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
 
-            hp += weakPointList[useAtkName].hp;
+            hp += weakPointList[useAtkName].colliders[i].hp;
         }
 
         return hp;
@@ -80,8 +66,6 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     protected virtual void Start()
     {
         attack = GetComponentInChildren<EnemyAttack>();
-
-        hitCollider = GetComponent<Collider>();
     }
 
     protected virtual void InitWeakPointColliders(string attackName, WeakPointColliderMap weakPoint)
@@ -89,13 +73,14 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         weakPointList.Add(attackName, weakPoint);
 
         useAtkName = attackName;
-        weakPointList[attackName].hp = weakPointList[attackName].maxHp;
 
         OnColliderFinished();
 
         int maxRange = weakPointList[useAtkName].colliders.Length;
         for (int i = 0; i < maxRange; i++)
         {
+            weakPointList[useAtkName].colliders[i].pointPosCollider.enabled = false;
+            weakPointList[attackName].colliders[i].hp = weakPointList[useAtkName].maxHp;
             WeakPointContainer.Instance.Add(weakPointList[attackName].colliders[i].pointPosCollider);
         }
     }
@@ -107,8 +92,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         {
             if (!weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
 
-            weakPointList[useAtkName].colliders[i].collider.enabled = false;
-            weakPointList[useAtkName].colliders[i].pointPosCollider.enabled = false;
+            weakPointList[useAtkName].colliders[i].hp = weakPointList[useAtkName].maxHp;
 
             Collider pointCollider = weakPointList[useAtkName].colliders[i].pointPosCollider;
 
@@ -118,7 +102,7 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         }
     }
 
-    // 特定の判定を有効にする
+    // 特定の部位のポイント画像を有効にする
     public virtual void OnWeakPointStart()
     {
         if (IsExecution) { return; }
@@ -128,10 +112,12 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         if (!weakPointList.ContainsKey(useAtkName)) { return; }
 
         int maxRange = weakPointList[useAtkName].colliders.Length;
+        float maxHp = 0.0f;
         for (int i = 0; i < maxRange; i++)
         {
-            weakPointList[useAtkName].colliders[i].collider.enabled = true;
-            weakPointList[useAtkName].hp = weakPointList[useAtkName].maxHp;
+            weakPointList[useAtkName].colliders[i].hp = weakPointList[useAtkName].maxHp;
+
+            maxHp += weakPointList[useAtkName].colliders[i].hp;
 
             Collider pointCollider = weakPointList[useAtkName].colliders[i].pointPosCollider;
 
@@ -140,7 +126,11 @@ public abstract class EnemyWeakPoint : MonoBehaviour
             WeakPointContainer.Instance.GetWeakPoint(pointCollider).OnActive();
         }
 
+        gaugeController.SetMaxWeakPointHP(maxHp);
+
         isExecution = true;
+
+        enableWeakPoint = true;
 
         isHitWeakPoint = false;
     }
@@ -150,36 +140,36 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     {
         if (!IsExecution) { return; }
 
-        weakPointList[useAtkName].hp = 0.0f;
-
         OnColliderFinished();
 
         isExecution = false;
 
+        enableWeakPoint = false;
+
         isHitWeakPoint = false;
     }
 
-    public virtual void OnHitPlayerAttack(Collider atkCollider)
+    public virtual void OnHitMagic(GameObject magicObj)
     {
-        var attack = atkCollider.GetComponent<PlayerAttack>();
+        if (!enableWeakPoint) { return; }
 
-        if (!attack) { return; }
+        var magic = magicObj.GetComponent<MagicalFX.MagicInfo>();
+
+        if (!magic) { return; }
 
         int maxRange = weakPointList[useAtkName].colliders.Length;
         for (int i = 0; i < maxRange; i++)
         {
             // 当てられたコライダーと一致しない
-            if (hitCollider != weakPointList[useAtkName].colliders[i].collider ||
-                !weakPointList[useAtkName].colliders[i].collider.enabled) { continue; }
+            if (hitCollider != weakPointList[useAtkName].colliders[i].collider) 
+            { continue; }
 
             isHitWeakPoint = true;
 
-            weakPointList[useAtkName].hp -= attack.GetAtkPow;
-            if (weakPointList[useAtkName].hp > 0.0f) { continue; }
+            weakPointList[useAtkName].colliders[i].hp--;
+            if (weakPointList[useAtkName].colliders[i].hp > 0.0f) { continue; }
 
-            weakPointList[useAtkName].colliders[i].collider.enabled = false;
-
-            weakPointList[useAtkName].hp = 0.0f;
+            weakPointList[useAtkName].colliders[i].hp = 0.0f;
 
             Collider pointCollider = weakPointList[useAtkName].colliders[i].pointPosCollider;
 
@@ -187,13 +177,14 @@ public abstract class EnemyWeakPoint : MonoBehaviour
 
             WeakPointContainer.Instance.GetWeakPoint(pointCollider).OnActiveFinished();
         }
+
+        hitCollider = null;
     }
 
     public abstract class WeakPointColliderMap
     {
         public PointCollider[] colliders;
         public float maxHp = 1.0f;
-        [HideInInspector] public float hp = 1.0f;
     }
 
     [Serializable]
@@ -201,5 +192,6 @@ public abstract class EnemyWeakPoint : MonoBehaviour
     {
         public Collider collider;
         public Collider pointPosCollider;
+        [HideInInspector] public float hp = 1.0f;
     }
 }

@@ -29,6 +29,7 @@ public class EnemyStatus : MobStatus
     [SerializeField] protected float downTime = 1.0f;
     protected float downTimeCounter = 0.0f;
     protected string getHitAnimationName = "GetHit";
+    protected bool isDown = false;
     protected bool isNearDist = false;
     protected bool isMiddleDist = false;
 
@@ -45,7 +46,9 @@ public class EnemyStatus : MobStatus
 
     public bool CanMove => actionState == ActionState.eMove;
 
-    public bool IsGetHit => actionState == ActionState.eGetHit;
+    protected bool IsGetHit => actionState == ActionState.eGetHit;
+
+    protected bool IsDown => isDown;
 
     public bool IsNearDist => isNearDist;
 
@@ -76,11 +79,9 @@ public class EnemyStatus : MobStatus
 
     protected virtual void DownTimeCount()
     {
-        if (!IsGetHit) { return; }
+        if (!IsGetHit || !IsDown) { return; }
 
         downTimeCounter -= 1.0f * Time.deltaTime;
-
-        Debug.Log("now Time : " + downTimeCounter);
 
         if(downTimeCounter <= 0.0f)
         {
@@ -132,6 +133,8 @@ public class EnemyStatus : MobStatus
 
     public void OnMove()
     {
+        GoToNormalStateIfPossible();
+
         actionState = ActionState.eMove;
         agent.isStopped = false;
 
@@ -153,10 +156,12 @@ public class EnemyStatus : MobStatus
         if(IsGetHit) { return; }
 
         actionState = ActionState.eGetHit;
+        agent.isStopped = true;
 
-        if(getHitAnimationName != "GetHit")
+        if (getHitAnimationName != "GetHit")
         {
             downTimeCounter = downTime;
+            isDown = true;
         }
 
         animator.SetTrigger(getHitAnimationName);
@@ -168,33 +173,43 @@ public class EnemyStatus : MobStatus
     {
         if (!IsGetHit) { return; }
 
+        isDown = false;
+
         animator.SetTrigger("GetUp");
         actionState = ActionState.eNone;
     }
 
-    public virtual void OnDamage(Collider collider, float damage)
+    public virtual void OnDamage(GameObject magicObj)
     {
+        var magic = magicObj.GetComponent<MagicalFX.MagicInfo>();
+        if (!magic) { return; }
+
+        float damageVal = magic.Power;
+
         if(GetWeakPoint.IsExecution)
         {
-            GetWeakPoint.OnHitPlayerAttack(collider);
+            GetWeakPoint.OnHitMagic(magicObj);
 
-            if(GetWeakPoint.Hp() <= 0.0f)
+            if((hp - damageVal) > 0.0f &&
+                GetWeakPoint.Hp() <= 0.0f)
             {
                 OnGetHit();
             }
         }
 
-        Damage(damage);
+        Damage(damageVal);
     }
 
     public override void Damage(float damage)
     {
         float damageVal = damage;
 
-        if(GetWeakPoint.IsHitWeakPoint)
+        if (GetWeakPoint.IsHitWeakPoint || IsDown)
         {
             damageVal *= 2.0f;
         }
+
+        Debug.Log(damageVal);
 
         base.Damage(damageVal);
     }

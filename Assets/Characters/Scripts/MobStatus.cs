@@ -10,6 +10,11 @@ public abstract class MobStatus : MonoBehaviour
         eDie
     }
 
+    [SerializeField] protected float maxHp = 100;
+    protected Animator animator;
+    protected StateEnum state = StateEnum.eNormal;
+    protected float hp;
+
     // ˆÚ“®‰Â”\‚©‚Ç‚¤‚©
     public bool IsMovabe => state == StateEnum.eNormal;
 
@@ -21,11 +26,6 @@ public abstract class MobStatus : MonoBehaviour
     // HPŠÖŒW
     public float MaxHp => maxHp;
     public float Hp => hp;
-
-    [SerializeField] protected float maxHp = 100;
-    protected Animator animator;
-    protected StateEnum state = StateEnum.eNormal;
-    protected float hp;
 
     protected virtual void Start()
     {

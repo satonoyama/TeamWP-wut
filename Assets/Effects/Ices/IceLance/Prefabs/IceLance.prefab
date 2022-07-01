@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 5503308618310517376}
   - component: {fileID: 4340575157655685580}
   - component: {fileID: 1710097472970873013}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: IceLance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -327,6 +327,19 @@ MonoBehaviour:
   onTriggerEnter:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 5503308618310517376}
+        m_TargetAssemblyTypeName: FallingLump, Assembly-CSharp
+        m_MethodName: OnShootingDown
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1268033720687149482, guid: f6ace473f2a41ce43ba6d584d13def54,
+            type: 3}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 5503308618310517376}
         m_TargetAssemblyTypeName: FallingLump, Assembly-CSharp
         m_MethodName: OnHitFallingLump
@@ -585,7 +598,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7859506782083908918}
   - component: {fileID: 3616363496158559325}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: HitDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
