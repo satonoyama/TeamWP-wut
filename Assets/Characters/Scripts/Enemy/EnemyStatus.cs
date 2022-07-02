@@ -31,7 +31,6 @@ public class EnemyStatus : MobStatus
 
     [SerializeField] protected MovementController target;
     [SerializeField] protected float downTime = 1.0f;
-    protected float downTimeCounter = 0.0f;
     protected string getHitAnimationName = "GetHit";
     protected bool isDown = false;
     protected bool isNearDist = false;
@@ -48,7 +47,8 @@ public class EnemyStatus : MobStatus
         return true;
     }
 
-    public bool CanMove => actionState == ActionState.eMove && !agent.isStopped;
+    public bool CanMove => actionState == 
+        ActionState.eMove && !IsDie && !agent.isStopped;
 
     protected bool IsGetHit => actionState == ActionState.eGetHit;
 
@@ -78,21 +78,7 @@ public class EnemyStatus : MobStatus
     {
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
 
-        DownTimeCount();
-
         DieSEVolumeDown();
-    }
-
-    protected virtual void DownTimeCount()
-    {
-        if (!IsGetHit || !IsDown) { return; }
-
-        downTimeCounter -= 1.0f * Time.deltaTime;
-
-        if(downTimeCounter <= 0.0f)
-        {
-            OnGetUp();
-        }
     }
 
     protected virtual void DieSEVolumeDown()
@@ -166,6 +152,8 @@ public class EnemyStatus : MobStatus
 
     public void OnMove()
     {
+        if (IsDown) { return; }
+
         GoToNormalStateIfPossible();
 
         actionState = ActionState.eMove;
@@ -191,15 +179,16 @@ public class EnemyStatus : MobStatus
         actionState = ActionState.eGetHit;
         agent.isStopped = true;
 
-        if (getHitAnimationName != "GetHit")
-        {
-            downTimeCounter = downTime;
-            isDown = true;
-        }
-
         animator.SetTrigger(getHitAnimationName);
 
         GetWeakPoint.OnWeakPointFinished();
+        EffectController.Instance.OnStopAllParticle();
+
+        if (getHitAnimationName != "GetHit")
+        {
+            isDown = true;
+            StartCoroutine(DownTimeCount());
+        }
     }
 
     protected void OnGetUp()
@@ -254,6 +243,7 @@ public class EnemyStatus : MobStatus
         GetWeakPoint.OnWeakPointFinished();
 
         WeakPointContainer.Instance.AllRemove();
+        EffectController.Instance.OnStopAllParticle();
         FallingLumpContainer.Instance.AllRemove();
 
         // TODO : Tansition to Clear Scene
@@ -267,5 +257,12 @@ public class EnemyStatus : MobStatus
     public virtual void OnAnimSpeedDefault()
     {
         animator.speed = defaultAnimationSpeed;
+    }
+
+    private IEnumerator DownTimeCount()
+    {
+        yield return new WaitForSeconds(downTime);
+
+        OnGetUp();
     }
 }

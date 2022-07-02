@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class EffectController : MonoBehaviour
 {
+    public static EffectController Instance
+    {
+        get { return instance; }
+    }
+
+    private static EffectController instance;
+
     public enum EffectID
     {
         eRoar,
@@ -15,6 +22,11 @@ public class EffectController : MonoBehaviour
 
     [SerializeField] private GenerateEffectMap[] effects;
     private bool isStop = false;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Update()
     {

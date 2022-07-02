@@ -11,6 +11,7 @@ public class FallingLump: MonoBehaviour
     }
     private MoveState status = MoveState.eWait;
 
+    [SerializeField] private Collider hitDetector = null;
     [SerializeField] private float power = 1.0f;
     [SerializeField] private float moveSpeed = 1.0f;
     private PlayerStatus target = null;
@@ -23,7 +24,6 @@ public class FallingLump: MonoBehaviour
     private AudioSource explotionSE = null;
     private bool isTracingTarget = false;
 
-    [SerializeField] private Collider hitDetector = null;
     private GameObject child = null;
     private int childrenNum = 0;
 
@@ -47,7 +47,7 @@ public class FallingLump: MonoBehaviour
 
     private bool IsExecutable => !IsHit && target;
 
-    private bool CheckIsHit()
+    private bool CheckCollisionByStage()
     {
         var pos = transform.position;
 
@@ -83,12 +83,13 @@ public class FallingLump: MonoBehaviour
         child.GetComponent<MeshRenderer>().material.color = new Color32(R, G, B, A);
     }
 
-    public void Initialize(PlayerStatus player, EnemyStatus myOwner, Vector3 waitPosition, bool isTracing)
+    public void Initialize(
+        PlayerStatus player, EnemyStatus myOwner, 
+        Vector3 waitPosition, bool isTracing)
     {
         target = player;
         owner = myOwner;
         waitPos = waitPosition;
-
         isTracingTarget = isTracing;
 
         if (fogParticle)
@@ -181,7 +182,7 @@ public class FallingLump: MonoBehaviour
             followSE.transform.position = transform.position;
         }
 
-        if (CheckIsHit())
+        if (CheckCollisionByStage())
         {
             StopFallingLump();
         }
@@ -223,10 +224,12 @@ public class FallingLump: MonoBehaviour
         moveVec *= moveSpeed;
     }
 
-    private void BreakFallingLump()
+    public void BreakFallingLump()
     {
         status = MoveState.eHit;
 
+        transform.GetComponent<Collider>().enabled = false;
+        
         if(WeakPointContainer.Instance.GetWeakPoint(hitDetector))
         {
             WeakPointContainer.Instance.Remove(hitDetector);
@@ -267,13 +270,13 @@ public class FallingLump: MonoBehaviour
         BreakFallingLump();
     }
 
-    public void OnHitFallingLump()
+    public void OnHitTarget()
     {
         if (!IsExecutable) { return; }
 
         target.Damage(power);
 
-        StopFallingLump();
+        BreakFallingLump();
     }
 
     public void OnShootingDown(GameObject magicObj)

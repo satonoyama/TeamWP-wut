@@ -4063,7 +4063,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   status: {fileID: 336868372294578936}
-  cooldownCounter: 0
   probSelectInfo:
     probability: 0.4
     cooldown: 4
@@ -4162,6 +4161,7 @@ MonoBehaviour:
   maxHp: 1000
   getUpSE: {fileID: 0}
   dieSE: {fileID: 0}
+  dieSEVolumeDownVal: 1
   fastAgentSpeed: 12.5
   target: {fileID: 0}
   downTime: 5
@@ -4266,18 +4266,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fallingLumpPrefab: {fileID: 5503308618310517376, guid: 462eb507b9f64ca48b954970111c5825,
     type: 3}
-  fallingLumInfo:
-    fogParticlePrefab: {fileID: 6015698810825327136, guid: 32baa0bca95fae844addc555c559a27e,
-      type: 3}
-    followParticlePrefab: {fileID: 4902211387918276262, guid: 7ed79d9ee570e1a4b8233ccd759148f8,
-      type: 3}
-    explotionPrefab: {fileID: 5568769306107221804, guid: f903123bcfae1744eb9e7a28877bf5d0,
-      type: 3}
-    followSE: {fileID: 336868371822335968}
-    generateSE: {fileID: 336868370961782986}
-    explotionSE: {fileID: 336868372111672177}
+  fallingLumpInfo:
+    fogParticlePrefab: {fileID: 0}
+    followParticlePrefab: {fileID: 0}
+    explotionPrefab: {fileID: 0}
+    followSE: {fileID: 0}
+    generateSE: {fileID: 0}
+    explotionSE: {fileID: 0}
     target: {fileID: 0}
     owner: {fileID: 0}
+    checkColliderPrefab: {fileID: 0}
   fallingLumps:
   - generatePos: {fileID: 336868372314033679}
     generatePosUpVal: 0

@@ -114526,15 +114526,8 @@ AnimationClip:
     floatParameter: 0.3
     intParameter: 0
     messageOptions: 0
-  - time: 2.5
+  - time: 2.4333334
     functionName: OnMoveFinished
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
-  - time: 2.5333333
-    functionName: OnLanding
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -114560,4 +114553,11 @@ AnimationClip:
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 2
+    messageOptions: 0
+  - time: 3.1666667
+    functionName: OnLanding
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
     messageOptions: 0
