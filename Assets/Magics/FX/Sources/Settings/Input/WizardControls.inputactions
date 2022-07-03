@@ -40,6 +40,42 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "AttackMove1",
+                    "type": "Button",
+                    "id": "f3cec250-1e46-41be-9b7a-ebfb863ab1d0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "AttackMove2",
+                    "type": "Button",
+                    "id": "f4b374f0-f7f6-4815-a10b-08ffa99e2057",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "StatusMove",
+                    "type": "Button",
+                    "id": "2b2f40fa-a8b3-4dc2-8091-3ec046d585a3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SpecialMove",
+                    "type": "Button",
+                    "id": "a4faf913-a083-4e4d-bceb-d696794d8db8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -84,6 +120,50 @@
                     "processors": "",
                     "groups": "Keyboard and Mouse",
                     "action": "ADS",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "70dbd250-95f3-4ec4-b2a3-d4ca6a9b1192",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "Burstfire",
+                    "processors": "",
+                    "groups": "Keyboard and Mouse",
+                    "action": "AttackMove1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b98a5135-07c1-4e3b-84a5-7873d27846e5",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Burstfire",
+                    "processors": "",
+                    "groups": "Keyboard and Mouse",
+                    "action": "AttackMove2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4088b9c4-3761-4d27-942c-50b6aff3a526",
+                    "path": "<Keyboard>/q",
+                    "interactions": "Burstfire",
+                    "processors": "",
+                    "groups": "Keyboard and Mouse",
+                    "action": "StatusMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fafe53a6-22af-4a65-98ac-4936550c18c1",
+                    "path": "<Keyboard>/e",
+                    "interactions": "Burstfire",
+                    "processors": "",
+                    "groups": "Keyboard and Mouse",
+                    "action": "SpecialMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

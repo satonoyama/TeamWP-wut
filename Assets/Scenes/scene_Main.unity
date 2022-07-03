@@ -134,7 +134,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 95696773}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ADSWeaponPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,14 +148,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 95696772}
-  m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: -0.7, y: 0, z: 0.1}
+  m_LocalRotation: {x: 0.46174863, y: 0, z: 0, w: 0.8870109}
+  m_LocalPosition: {x: -0.2, y: 0.15, z: 0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 162064244}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 55, y: 0, z: 0}
 --- !u!1 &162064243
 GameObject:
   m_ObjectHideFlags: 0
@@ -166,7 +166,7 @@ GameObject:
   m_Component:
   - component: {fileID: 162064244}
   - component: {fileID: 162064245}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FirstPersonWeapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,6 +205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DefaultPosition: {fileID: 347253923}
   ADSPosition: {fileID: 95696773}
+  StaffHoldSpeed: 15
   playerCam: {fileID: 283791657}
   defualtFov: 60
   ADSFovRatio: 1.1
@@ -453,7 +454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 347253923}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DefaultWeaponPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -468,7 +469,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 347253922}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: 0, z: 0}
+  m_LocalPosition: {x: -0.18, y: 0, z: 0.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -558,6 +559,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Staff
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417435450986619218, guid: 0d0ae09fa98635e4e8435fc1a1fc72c7,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d0ae09fa98635e4e8435fc1a1fc72c7, type: 3}
@@ -833,7 +839,7 @@ MonoBehaviour:
   maxHp: 100
   maxSp: 100
   sp: 1
-  spHealValByTime: 5
+  spHealValByTime: 13
   dmgWaitTime: 0.3
 --- !u!114 &1135397698
 MonoBehaviour:
@@ -856,6 +862,14 @@ MonoBehaviour:
     useSpValue: 0
     ability: {fileID: 660543171}
     canDo: 0
+  - collider: []
+    se: []
+    power: 10
+    attackName: 
+    id: 0
+    useSpValue: 0
+    ability: {fileID: 660543171}
+    canDo: 0
   status: {fileID: 1135397696}
 --- !u!114 &1135397700
 MonoBehaviour:
@@ -869,9 +883,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81de9261eb2101e42af2c2ce0a0e7ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpellsLearned:
+  spellsLearned:
   - {fileID: 1268033720687149482, guid: f6ace473f2a41ce43ba6d584d13def54, type: 3}
-  Index: 0
+  - {fileID: 1268033720687149482, guid: 7a2dcd050a3d8774b88f313112141cc7, type: 3}
+  - {fileID: 1268033720687149482, guid: 7960d96d3130e4740bd785f8e685a9e7, type: 3}
+  status: {fileID: 1135397696}
+  staff: {fileID: 1400741701}
 --- !u!1 &1209870184
 GameObject:
   m_ObjectHideFlags: 0
@@ -3938,6 +3955,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 567467048299060112, guid: 61556c1308039df4dac5f7de89e9f57a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 4209838464582313751, guid: 61556c1308039df4dac5f7de89e9f57a,
         type: 3}
       propertyPath: field of view
@@ -3963,6 +3985,11 @@ PrefabInstance:
       propertyPath: cameraShake
       value: 
       objectReference: {fileID: 283791653}
+    - target: {fileID: 5332724029053497746, guid: 61556c1308039df4dac5f7de89e9f57a,
+        type: 3}
+      propertyPath: slideDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5332724029053497746, guid: 61556c1308039df4dac5f7de89e9f57a,
         type: 3}
       propertyPath: forwardWalkSpeed
@@ -4068,6 +4095,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: prefab_FirstPersonController
       objectReference: {fileID: 0}
+    - target: {fileID: 5332724029619515140, guid: 61556c1308039df4dac5f7de89e9f57a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5332724029619535600, guid: 61556c1308039df4dac5f7de89e9f57a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5332724029619591564, guid: 61556c1308039df4dac5f7de89e9f57a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 5332724029619753496, guid: 61556c1308039df4dac5f7de89e9f57a,
         type: 3}
       propertyPath: m_RootOrder
@@ -4127,6 +4169,11 @@ PrefabInstance:
         type: 3}
       propertyPath: lookSensitivity
       value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333650307199098766, guid: 61556c1308039df4dac5f7de89e9f57a,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61556c1308039df4dac5f7de89e9f57a, type: 3}

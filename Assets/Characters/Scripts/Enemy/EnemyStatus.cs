@@ -209,7 +209,7 @@ public class EnemyStatus : MobStatus
             damageVal *= 2.0f;
         }
 
-        Debug.Log(damageVal);
+        Debug.Log("Deal damage:" + damageVal);
 
         base.Damage(damageVal);
     }

@@ -55,6 +55,12 @@ public class PlayerStatus : MobStatus
         if(sp >= MaxSp) { sp = MaxSp; }
     }
 
+    //! ‚â‚Á‚Â‚¯‚È‚Ì‚Å‰ü—Ç‚·‚é‚±‚Æ
+    public void AddSP(float val)
+    {
+        sp += val;
+    }
+
     protected override void OnDie()
     {
         if(state == StateEnum.eDie) { return; }

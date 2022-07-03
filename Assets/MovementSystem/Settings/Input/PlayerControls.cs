@@ -98,6 +98,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Slide"",
+                    ""type"": ""Button"",
+                    ""id"": ""48a25b67-70b2-439d-bf38-f4778ce06223"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -386,6 +395,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""test"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""672230e0-e27e-44d8-aae1-97b995f5a9e2"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard and Mouse"",
+                    ""action"": ""Slide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -413,6 +433,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Movement_Sprint = m_Movement.FindAction("Sprint", throwIfNotFound: true);
         m_Movement_Look = m_Movement.FindAction("Look", throwIfNotFound: true);
         m_Movement_test = m_Movement.FindAction("test", throwIfNotFound: true);
+        m_Movement_Slide = m_Movement.FindAction("Slide", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -480,6 +501,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Movement_Sprint;
     private readonly InputAction m_Movement_Look;
     private readonly InputAction m_Movement_test;
+    private readonly InputAction m_Movement_Slide;
     public struct MovementActions
     {
         private @PlayerControls m_Wrapper;
@@ -492,6 +514,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Sprint => m_Wrapper.m_Movement_Sprint;
         public InputAction @Look => m_Wrapper.m_Movement_Look;
         public InputAction @test => m_Wrapper.m_Movement_test;
+        public InputAction @Slide => m_Wrapper.m_Movement_Slide;
         public InputActionMap Get() { return m_Wrapper.m_Movement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -525,6 +548,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @test.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnTest;
                 @test.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnTest;
                 @test.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnTest;
+                @Slide.started -= m_Wrapper.m_MovementActionsCallbackInterface.OnSlide;
+                @Slide.performed -= m_Wrapper.m_MovementActionsCallbackInterface.OnSlide;
+                @Slide.canceled -= m_Wrapper.m_MovementActionsCallbackInterface.OnSlide;
             }
             m_Wrapper.m_MovementActionsCallbackInterface = instance;
             if (instance != null)
@@ -553,6 +579,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @test.started += instance.OnTest;
                 @test.performed += instance.OnTest;
                 @test.canceled += instance.OnTest;
+                @Slide.started += instance.OnSlide;
+                @Slide.performed += instance.OnSlide;
+                @Slide.canceled += instance.OnSlide;
             }
         }
     }
@@ -585,5 +614,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnSprint(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnTest(InputAction.CallbackContext context);
+        void OnSlide(InputAction.CallbackContext context);
     }
 }

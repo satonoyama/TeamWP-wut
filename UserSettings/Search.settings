@@ -7,9 +7,12 @@ onBoardingDoNotAskAgain = true
 showPackageIndexes = false
 showStatusBar = false
 scopes = {
-	"last_search.8040E7BB" = "inpu"
+	"last_search.8040E7BB" = "Player "
 	"OpenInspectorPreview.8040E7BB" = "0"
 	"currentGroup.8040E7BB" = "all"
+	"last_search.8788AF05" = "WeaponState"
+	"OpenInspectorPreview.8788AF05" = "0"
+	"currentGroup.8788AF05" = "all"
 }
 providers = {
 	adb = {
@@ -54,6 +57,10 @@ providers = {
 	}
 }
 recentSearches = [
+	"P"
+	"Weapon"
+	"A"
+	"M"
 ]
 searchItemFavorites = [
 ]

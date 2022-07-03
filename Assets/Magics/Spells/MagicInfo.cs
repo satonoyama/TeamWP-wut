@@ -16,6 +16,7 @@ namespace MagicalFX
 
         public float Delay { get {return delay;} }
         public float Power { get { return firePower; } }
+        public float ManaCost { get { return manaCost; } }
         public float OtherEffectDelay { get {return otherEffectDelay;} }
     }
 }

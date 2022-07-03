@@ -10,7 +10,6 @@ public class HandheldMoving : MonoBehaviour
     private MovementController movementController;
     private WeaponStateController weaponStateController;
 
-    Vector3 m_WeaponMainLocalPosition;
     Vector3 m_WeaponBobLocalPosition;
 
     void Start()

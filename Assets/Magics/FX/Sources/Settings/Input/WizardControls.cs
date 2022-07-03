@@ -62,6 +62,42 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AttackMove1"",
+                    ""type"": ""Button"",
+                    ""id"": ""f3cec250-1e46-41be-9b7a-ebfb863ab1d0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""AttackMove2"",
+                    ""type"": ""Button"",
+                    ""id"": ""f4b374f0-f7f6-4815-a10b-08ffa99e2057"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""StatusMove"",
+                    ""type"": ""Button"",
+                    ""id"": ""2b2f40fa-a8b3-4dc2-8091-3ec046d585a3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SpecialMove"",
+                    ""type"": ""Button"",
+                    ""id"": ""a4faf913-a083-4e4d-bceb-d696794d8db8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -108,6 +144,50 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
                     ""action"": ""ADS"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""70dbd250-95f3-4ec4-b2a3-d4ca6a9b1192"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": ""Burstfire"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard and Mouse"",
+                    ""action"": ""AttackMove1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b98a5135-07c1-4e3b-84a5-7873d27846e5"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": ""Burstfire"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard and Mouse"",
+                    ""action"": ""AttackMove2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4088b9c4-3761-4d27-942c-50b6aff3a526"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": ""Burstfire"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard and Mouse"",
+                    ""action"": ""StatusMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fafe53a6-22af-4a65-98ac-4936550c18c1"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": ""Burstfire"",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard and Mouse"",
+                    ""action"": ""SpecialMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -131,6 +211,10 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
         m_Magic_Burst = m_Magic.FindAction("Burst", throwIfNotFound: true);
         m_Magic_FireEnd = m_Magic.FindAction("FireEnd", throwIfNotFound: true);
         m_Magic_ADS = m_Magic.FindAction("ADS", throwIfNotFound: true);
+        m_Magic_AttackMove1 = m_Magic.FindAction("AttackMove1", throwIfNotFound: true);
+        m_Magic_AttackMove2 = m_Magic.FindAction("AttackMove2", throwIfNotFound: true);
+        m_Magic_StatusMove = m_Magic.FindAction("StatusMove", throwIfNotFound: true);
+        m_Magic_SpecialMove = m_Magic.FindAction("SpecialMove", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -194,6 +278,10 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Magic_Burst;
     private readonly InputAction m_Magic_FireEnd;
     private readonly InputAction m_Magic_ADS;
+    private readonly InputAction m_Magic_AttackMove1;
+    private readonly InputAction m_Magic_AttackMove2;
+    private readonly InputAction m_Magic_StatusMove;
+    private readonly InputAction m_Magic_SpecialMove;
     public struct MagicActions
     {
         private @WizardControls m_Wrapper;
@@ -202,6 +290,10 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
         public InputAction @Burst => m_Wrapper.m_Magic_Burst;
         public InputAction @FireEnd => m_Wrapper.m_Magic_FireEnd;
         public InputAction @ADS => m_Wrapper.m_Magic_ADS;
+        public InputAction @AttackMove1 => m_Wrapper.m_Magic_AttackMove1;
+        public InputAction @AttackMove2 => m_Wrapper.m_Magic_AttackMove2;
+        public InputAction @StatusMove => m_Wrapper.m_Magic_StatusMove;
+        public InputAction @SpecialMove => m_Wrapper.m_Magic_SpecialMove;
         public InputActionMap Get() { return m_Wrapper.m_Magic; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -223,6 +315,18 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
                 @ADS.started -= m_Wrapper.m_MagicActionsCallbackInterface.OnADS;
                 @ADS.performed -= m_Wrapper.m_MagicActionsCallbackInterface.OnADS;
                 @ADS.canceled -= m_Wrapper.m_MagicActionsCallbackInterface.OnADS;
+                @AttackMove1.started -= m_Wrapper.m_MagicActionsCallbackInterface.OnAttackMove1;
+                @AttackMove1.performed -= m_Wrapper.m_MagicActionsCallbackInterface.OnAttackMove1;
+                @AttackMove1.canceled -= m_Wrapper.m_MagicActionsCallbackInterface.OnAttackMove1;
+                @AttackMove2.started -= m_Wrapper.m_MagicActionsCallbackInterface.OnAttackMove2;
+                @AttackMove2.performed -= m_Wrapper.m_MagicActionsCallbackInterface.OnAttackMove2;
+                @AttackMove2.canceled -= m_Wrapper.m_MagicActionsCallbackInterface.OnAttackMove2;
+                @StatusMove.started -= m_Wrapper.m_MagicActionsCallbackInterface.OnStatusMove;
+                @StatusMove.performed -= m_Wrapper.m_MagicActionsCallbackInterface.OnStatusMove;
+                @StatusMove.canceled -= m_Wrapper.m_MagicActionsCallbackInterface.OnStatusMove;
+                @SpecialMove.started -= m_Wrapper.m_MagicActionsCallbackInterface.OnSpecialMove;
+                @SpecialMove.performed -= m_Wrapper.m_MagicActionsCallbackInterface.OnSpecialMove;
+                @SpecialMove.canceled -= m_Wrapper.m_MagicActionsCallbackInterface.OnSpecialMove;
             }
             m_Wrapper.m_MagicActionsCallbackInterface = instance;
             if (instance != null)
@@ -239,6 +343,18 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
                 @ADS.started += instance.OnADS;
                 @ADS.performed += instance.OnADS;
                 @ADS.canceled += instance.OnADS;
+                @AttackMove1.started += instance.OnAttackMove1;
+                @AttackMove1.performed += instance.OnAttackMove1;
+                @AttackMove1.canceled += instance.OnAttackMove1;
+                @AttackMove2.started += instance.OnAttackMove2;
+                @AttackMove2.performed += instance.OnAttackMove2;
+                @AttackMove2.canceled += instance.OnAttackMove2;
+                @StatusMove.started += instance.OnStatusMove;
+                @StatusMove.performed += instance.OnStatusMove;
+                @StatusMove.canceled += instance.OnStatusMove;
+                @SpecialMove.started += instance.OnSpecialMove;
+                @SpecialMove.performed += instance.OnSpecialMove;
+                @SpecialMove.canceled += instance.OnSpecialMove;
             }
         }
     }
@@ -267,5 +383,9 @@ public partial class @WizardControls : IInputActionCollection2, IDisposable
         void OnBurst(InputAction.CallbackContext context);
         void OnFireEnd(InputAction.CallbackContext context);
         void OnADS(InputAction.CallbackContext context);
+        void OnAttackMove1(InputAction.CallbackContext context);
+        void OnAttackMove2(InputAction.CallbackContext context);
+        void OnStatusMove(InputAction.CallbackContext context);
+        void OnSpecialMove(InputAction.CallbackContext context);
     }
 }
