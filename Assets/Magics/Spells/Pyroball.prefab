@@ -81,7 +81,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delay: 0.3
   burstfire: 0
-  firePower: 100
+  firePower: 5
   manaCost: 0
   otherEffectDelay: 0.8
 --- !u!114 &246467706032654828
@@ -108,6 +108,26 @@ PrefabInstance:
     - target: {fileID: 143118, guid: 527406e5041aa2b4491fe937c48c0e3b, type: 3}
       propertyPath: m_Name
       value: Hell_Fireball
+      objectReference: {fileID: 0}
+    - target: {fileID: 143118, guid: 527406e5041aa2b4491fe937c48c0e3b, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 143120, guid: 527406e5041aa2b4491fe937c48c0e3b, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 143122, guid: 527406e5041aa2b4491fe937c48c0e3b, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 143124, guid: 527406e5041aa2b4491fe937c48c0e3b, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 153458, guid: 527406e5041aa2b4491fe937c48c0e3b, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 443120, guid: 527406e5041aa2b4491fe937c48c0e3b, type: 3}
       propertyPath: m_RootOrder
@@ -202,9 +222,37 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7234861654720097972}
     m_Modifications:
+    - target: {fileID: 106184, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 182150, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
       propertyPath: m_Name
       value: Fire_Muzzleflash
+      objectReference: {fileID: 0}
+    - target: {fileID: 182150, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 182152, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 182154, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 182156, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 182158, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 182160, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 482150, guid: 9e23a6e3bbac14f4086d075e78709ccf, type: 3}
       propertyPath: m_RootOrder

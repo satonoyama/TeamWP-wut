@@ -21,14 +21,19 @@ public class EnemyStatus : MobStatus
     protected ActionState actionState = ActionState.eNone;
     protected NavMeshAgent agent;
 
+    [SerializeField] protected AudioSource getUpSE = null;
+    [SerializeField] protected AudioSource dieSE = null;
+    [SerializeField] protected float dieSEVolumeDownVal = 1.0f;
+
     [SerializeField] protected float fastAgentSpeed = 1.0f;
     protected float defaultAgentSpeed = 1.0f;
     protected float defaultAnimationSpeed = 0.0f;
 
     [SerializeField] protected MovementController target;
     [SerializeField] protected float downTime = 1.0f;
-    protected float downTimeCounter = 0.0f;
+    [SerializeField] protected float downTimeCounter = 0.0f;
     protected string getHitAnimationName = "GetHit";
+    protected bool isDown = false;
     protected bool isNearDist = false;
     protected bool isMiddleDist = false;
 
@@ -43,9 +48,12 @@ public class EnemyStatus : MobStatus
         return true;
     }
 
-    public bool CanMove => actionState == ActionState.eMove;
+    public bool CanMove => actionState == 
+        ActionState.eMove && !IsDie && !agent.isStopped;
 
-    public bool IsGetHit => actionState == ActionState.eGetHit;
+    protected bool IsGetHit => actionState == ActionState.eGetHit;
+
+    protected bool IsDown => isDown;
 
     public bool IsNearDist => isNearDist;
 
@@ -71,21 +79,46 @@ public class EnemyStatus : MobStatus
     {
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
 
-        DownTimeCount();
+        DieSEVolumeDown();
     }
 
-    protected virtual void DownTimeCount()
+    private void FixedUpdate()
     {
-        if (!IsGetHit) { return; }
+        if (downTimeCounter <= 0.0f) { return; }
 
         downTimeCounter -= 1.0f * Time.deltaTime;
-
-        Debug.Log("now Time : " + downTimeCounter);
 
         if(downTimeCounter <= 0.0f)
         {
             OnGetUp();
         }
+    }
+
+    protected virtual void DieSEVolumeDown()
+    {
+        if (!dieSE.isPlaying) { return; }
+
+        dieSE.volume -= dieSEVolumeDownVal * Time.deltaTime;
+
+        if (dieSE.volume <= 0.0f)
+        {
+            dieSE.Stop();
+        }
+    }
+
+    public void OnPlayGetUpSE(float volume = 1.0f)
+    {
+        if (!getUpSE) { return; }
+
+        getUpSE.volume = volume;
+        getUpSE.Play();
+    }
+
+    public void OnPlayDieSE()
+    {
+        if (!dieSE) { return; }
+
+        dieSE.Play();
     }
 
     public void OnNearDistColliderEnter()
@@ -132,6 +165,10 @@ public class EnemyStatus : MobStatus
 
     public void OnMove()
     {
+        if (IsDown) { return; }
+
+        GoToNormalStateIfPossible();
+
         actionState = ActionState.eMove;
         agent.isStopped = false;
 
@@ -152,46 +189,59 @@ public class EnemyStatus : MobStatus
     {
         if(IsGetHit) { return; }
 
-        actionState = ActionState.eGetHit;
+        downTimeCounter = downTime;
 
-        if(getHitAnimationName != "GetHit")
-        {
-            downTimeCounter = downTime;
-        }
+        actionState = ActionState.eGetHit;
+        agent.isStopped = true;
 
         animator.SetTrigger(getHitAnimationName);
 
         GetWeakPoint.OnWeakPointFinished();
+        EffectController.Instance.OnStopAllParticle();
+
+        if (getHitAnimationName != "GetHit")
+        {
+            isDown = true;
+            StartCoroutine(DownTimeCount());
+        }
     }
 
     protected void OnGetUp()
     {
         if (!IsGetHit) { return; }
 
+        isDown = false;
+        downTimeCounter = 0.0f;
+
         animator.SetTrigger("GetUp");
         actionState = ActionState.eNone;
     }
 
-    public virtual void OnDamage(Collider collider, float damage)
+    public virtual void OnDamage(MagicalFX.MagicInfo magic)
     {
+        if (!magic) { return; }
+
+        float damageVal = magic.Power;
+
         if(GetWeakPoint.IsExecution)
         {
-            GetWeakPoint.OnHitPlayerAttack(collider);
+            GetWeakPoint.OnHitMagic(magic);
 
-            if(GetWeakPoint.Hp() <= 0.0f)
+            if((hp - damageVal) > 0.0f &&
+                GetWeakPoint.Hp() <= 0.0f)
             {
                 OnGetHit();
             }
         }
 
-        Damage(damage);
+        Damage(damageVal);
     }
 
     public override void Damage(float damage)
     {
         float damageVal = damage;
 
-        if(GetWeakPoint.IsHitWeakPoint)
+        if (GetWeakPoint.IsHitWeakPoint || IsDown)
         {
             damageVal *= 2.0f;
         }
@@ -208,9 +258,8 @@ public class EnemyStatus : MobStatus
         GetWeakPoint.OnWeakPointFinished();
 
         WeakPointContainer.Instance.AllRemove();
+        EffectController.Instance.OnStopAllParticle();
         FallingLumpContainer.Instance.AllRemove();
-
-        // TODO : Tansition to Clear Scene
     }
 
     public virtual void OnSlowlyAnimation(float speed)
@@ -221,5 +270,12 @@ public class EnemyStatus : MobStatus
     public virtual void OnAnimSpeedDefault()
     {
         animator.speed = defaultAnimationSpeed;
+    }
+
+    private IEnumerator DownTimeCount()
+    {
+        yield return new WaitForSeconds(downTime);
+
+        OnGetUp();
     }
 }

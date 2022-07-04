@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // Mob( 動くオブジェクト, MoveObjectの略 )の状態管理スクリプト
 public abstract class MobStatus : MonoBehaviour
@@ -9,6 +10,11 @@ public abstract class MobStatus : MonoBehaviour
         eAttack,
         eDie
     }
+
+    [SerializeField] protected float maxHp = 100;
+    protected Animator animator;
+    protected StateEnum state = StateEnum.eNormal;
+    protected float hp;
 
     // 移動可能かどうか
     public bool IsMovabe => state == StateEnum.eNormal;
@@ -21,11 +27,6 @@ public abstract class MobStatus : MonoBehaviour
     // HP関係
     public float MaxHp => maxHp;
     public float Hp => hp;
-
-    [SerializeField] protected float maxHp = 100;
-    protected Animator animator;
-    protected StateEnum state = StateEnum.eNormal;
-    protected float hp;
 
     protected virtual void Start()
     {
@@ -69,5 +70,10 @@ public abstract class MobStatus : MonoBehaviour
     {
         if(state == StateEnum.eDie) { return; }
         state = StateEnum.eNormal;
+    }
+
+    public virtual void OnChangeScene(string sceneName)
+    {
+        SceneController.Instance.SceneChange(sceneName);
     }
 }

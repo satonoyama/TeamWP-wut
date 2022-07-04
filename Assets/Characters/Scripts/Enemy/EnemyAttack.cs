@@ -15,7 +15,7 @@ public abstract class EnemyAttack : MobAttack
     protected DistantStateEnum distState = DistantStateEnum.eNear;
 
     [SerializeField] protected EnemyStatus status;
-    [SerializeField] protected float cooldownCounter = 0.0f; // ( Šm”F—p )Œã‚Åinspector‚©‚ç‚¢‚¶‚ê‚È‚­‚·‚é
+    protected float cooldownCounter = 0.0f;
 
     [Serializable]
     protected struct ProbabilitySelectInfo
@@ -265,9 +265,15 @@ public abstract class EnemyAttack : MobAttack
         base.OnAttackFinished();
 
         status.GetWeakPoint.OnWeakPointFinished();
-        status.GoToNormalStateIfPossible();
 
         SelectUseAttack();
+    }
+
+    public virtual void OnAttackFinishedByGetHit()
+    {
+        cooldownCounter = useAttackList[distState][useAtkListIndex].cooldown;
+
+        OnAttackFinished();
     }
 
     public abstract class EnemyAtkColliderMap : AttackColliderMap

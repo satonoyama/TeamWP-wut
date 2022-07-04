@@ -3,19 +3,30 @@ using UnityEngine;
 
 public class IceDragonStatus : EnemyStatus
 {
+    public enum IceDragonGetHitState
+    {
+        eGetHit,
+        eShootingDown
+    }
+    private IceDragonGetHitState getHitState = IceDragonGetHitState.eGetHit;
+
+    [SerializeField] private AudioSource[] getHitSEList;
     [SerializeField] private AudioSource flyingSE = null;
     [SerializeField] private AudioSource landingSE = null;
 
-    private bool isLanding = false;
+    private bool isLanding = true;
     private bool isDistCnecked = false;
 
-    private readonly string[] getHitAnimeTriggerNameList = { "ShootingDown", "GetHit"};
+    private readonly string[] getHitAnimeTriggerNameList = { "GetHit", "ShootingDown" };
 
     private string GetHitAnimeTriggerName(int id) => getHitAnimeTriggerNameList[id];
 
-    protected override void Update()
+    public void OnPlayGetHitSE(IceDragonGetHitState id)
     {
-        base.Update();
+        if (!getHitSEList[(int)id] ||
+             getHitSEList[(int)id].isPlaying) { return; }
+
+        getHitSEList[(int)id].Play();
     }
 
     public void OnPlayFlyingSE(float vol = 1.0f)
@@ -33,25 +44,18 @@ public class IceDragonStatus : EnemyStatus
         landingSE.Play();
     }
 
-    public override void OnScream()
-    {
-        getHitAnimationName = GetHitAnimeTriggerName(Convert.ToInt32(isLanding));
-
-        isLanding = false;
-
-        base.OnScream();
-        GoToNormalStateIfPossible();
-    }
-
     public void OnTakeOff()
     {
+        getHitState = IceDragonGetHitState.eShootingDown;
         isLanding = false;
-        getHitAnimationName = GetHitAnimeTriggerName(Convert.ToInt32(isLanding));
+        getHitAnimationName = GetHitAnimeTriggerName((int)getHitState);
     }
 
     public void OnLanding()
     {
+        getHitState = IceDragonGetHitState.eGetHit;
         isLanding = true;
+        getHitAnimationName = GetHitAnimeTriggerName((int)getHitState);
     }
 
     public void OnCheckLongDist()
@@ -77,7 +81,7 @@ public class IceDragonStatus : EnemyStatus
     public override void GoToNormalStateIfPossible()
     {
         // Å´ Ç±ÇÍÇ™Ç»Ç¢Ç∆íÖó§íÜÇ…éüÇÃçUåÇÇÇµÇƒÇµÇ‹Ç§
-        if (isLanding) { return; }
+        if (!isLanding) { return; }
 
         base.GoToNormalStateIfPossible();
     }

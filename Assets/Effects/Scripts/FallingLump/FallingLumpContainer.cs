@@ -20,28 +20,37 @@ public class FallingLumpContainer : MonoBehaviour
     }
 
     [SerializeField] private FallingLump fallingLumpPrefab = null;
-    [SerializeField] private FallingLumpInfo fallingLumInfo;
+    [SerializeField] private FallingLumpInfo fallingLumpInfo;
     [SerializeField] private FallingLumpGenInfoMap[] fallingLumps;
 
     // List to save generated particles
     private readonly Dictionary<int, FallingLumpInfo> fallingLumpMap = new();
 
+    private bool IsSetting()
+    {
+        return  fallingLumpPrefab                    &&
+                fallingLumpInfo.fogParticlePrefab    &&
+                fallingLumpInfo.followParticlePrefab &&
+                fallingLumpInfo.explotionPrefab      &&
+                fallingLumpInfo.followSE             &&
+                fallingLumpInfo.generateSE           &&
+                fallingLumpInfo.explotionSE          &&
+                fallingLumpInfo.target               &&
+                fallingLumpInfo.owner;
+    }
+
     private void Add()
     {
-        if ( !fallingLumpPrefab ||
-             !fallingLumInfo.fogParticlePrefab ||
-             !fallingLumInfo.followParticlePrefab ||
-             !fallingLumInfo.explotionPrefab ||
-             !fallingLumInfo.target) { return; }
+        if ( !IsSetting()) { return; }
 
         Vector3 pos;
 
         var fogRot = 
-            fallingLumInfo.fogParticlePrefab
+            fallingLumpInfo.fogParticlePrefab
             .gameObject.transform.rotation;
         
         var explotionRot = 
-            fallingLumInfo.explotionPrefab
+            fallingLumpInfo.explotionPrefab
             .gameObject.transform.rotation;
 
         for (int i = 0; i < fallingLumps.Length; i++)
@@ -49,25 +58,24 @@ public class FallingLumpContainer : MonoBehaviour
             pos = GetGeneratePos(i);
 
             var explotion = Instantiate(
-                    fallingLumInfo.explotionPrefab, 
+                    fallingLumpInfo.explotionPrefab, 
                     pos, explotionRot);
             
             var fog = Instantiate(
-                fallingLumInfo.fogParticlePrefab,
+                fallingLumpInfo.fogParticlePrefab,
                 pos, fogRot);
             
             var follow = Instantiate(
-                fallingLumInfo.followParticlePrefab,
+                fallingLumpInfo.followParticlePrefab,
                 pos, Quaternion.identity);
 
             FallingLumpInfo info = new();
             info.fogParticlePrefab = fog;
             info.followParticlePrefab = follow;
             info.explotionPrefab = explotion;
-            info.generateSE = fallingLumInfo.generateSE;
-            info.explotionSE = fallingLumInfo.explotionSE;
-            info.followSE = fallingLumInfo.followSE;
-            info.target = fallingLumInfo.target;
+            info.generateSE = fallingLumpInfo.generateSE;
+            info.explotionSE = fallingLumpInfo.explotionSE;
+            info.followSE = fallingLumpInfo.followSE;
 
             fallingLumpMap.Add(i, info);
         }
@@ -81,9 +89,15 @@ public class FallingLumpContainer : MonoBehaviour
         {
             pos = GetGeneratePos(i);
 
+            var checkCollider = Instantiate(
+                fallingLumpInfo.checkColliderPrefab,
+                pos, Quaternion.identity);
+
             var fallingLump = Instantiate(
                 fallingLumpPrefab, pos,
                 gameObject.transform.rotation);
+
+            checkCollider.SetOwner(fallingLump);
 
             fallingLump.SetParticles(
                 fallingLumpMap[i].explotionPrefab,
@@ -96,7 +110,9 @@ public class FallingLumpContainer : MonoBehaviour
                 fallingLumpMap[i].followSE);
 
             fallingLump.Initialize(
-                fallingLumInfo.target, pos,
+                fallingLumpInfo.target, 
+                fallingLumpInfo.owner,
+                pos,
                 fallingLumps[i].isTracingTarget);
         }
     }
@@ -105,7 +121,7 @@ public class FallingLumpContainer : MonoBehaviour
     {
         Vector3 pos;
 
-        pos = fallingLumInfo.target.transform.position;
+        pos = fallingLumpInfo.target.transform.position;
         pos.y += fallingLumps[i].generatePosUpVal;
 
         if (fallingLumps[i].generatePos)
@@ -131,6 +147,8 @@ public class FallingLumpContainer : MonoBehaviour
         [SerializeField] public AudioSource generateSE = null;
         [SerializeField] public AudioSource explotionSE = null;
         [SerializeField] public PlayerStatus target = null;
+        [SerializeField] public EnemyStatus owner = null;
+        [SerializeField] public MagicHitChecker checkColliderPrefab = null;
     }
 
     [Serializable]
