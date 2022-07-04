@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // Mob( 動くオブジェクト, MoveObjectの略 )の状態管理スクリプト
 public abstract class MobStatus : MonoBehaviour
@@ -69,5 +70,10 @@ public abstract class MobStatus : MonoBehaviour
     {
         if(state == StateEnum.eDie) { return; }
         state = StateEnum.eNormal;
+    }
+
+    public virtual void OnChangeScene(string sceneName)
+    {
+        SceneController.Instance.SceneChange(sceneName);
     }
 }

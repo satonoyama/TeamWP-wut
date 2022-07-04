@@ -1,0 +1,34 @@
+{
+    "name": "GUIController",
+    "maps": [
+        {
+            "name": "GameClear",
+            "id": "2e4ac71c-c42b-477c-8e98-272b52fbdb30",
+            "actions": [
+                {
+                    "name": "Enter",
+                    "type": "Button",
+                    "id": "b7403b2a-87c1-4192-8c17-12a46f30cbde",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e1f8048a-fb9d-431b-beb0-4b39bb34237a",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Enter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

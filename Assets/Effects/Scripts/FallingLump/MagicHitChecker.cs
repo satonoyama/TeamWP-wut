@@ -8,6 +8,12 @@ public class MagicHitChecker : MonoBehaviour
 
     private void Update()
     {
+        if(!owner.IsExecutable)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         transform.position = owner.transform.position;
     }
 

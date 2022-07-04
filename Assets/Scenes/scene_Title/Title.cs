@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 
 public class Title : MonoBehaviour
@@ -25,7 +21,7 @@ public class Title : MonoBehaviour
 
 	void MainSceneTransfer(InputAction.CallbackContext context)
 	{
-		SceneManager.LoadScene("scene_Main");
+		SceneController.Instance.SceneChange("scene_Main");
 	}
 
 	// Update is called once per frame

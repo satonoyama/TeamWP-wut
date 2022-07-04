@@ -1,0 +1,34 @@
+{
+    "name": "GUIController",
+    "maps": [
+        {
+            "name": "GameOver",
+            "id": "3a037475-45c1-4830-b50b-c951311c34b9",
+            "actions": [
+                {
+                    "name": "Enter",
+                    "type": "Button",
+                    "id": "65b570aa-e394-40cb-9a10-0f41e1842bc1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6749d4a8-0cd3-4e93-80f5-6b7b9b6686d1",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "Press(behavior=1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Enter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -149,11 +149,9 @@ public abstract class EnemyWeakPoint : MonoBehaviour
         isHitWeakPoint = false;
     }
 
-    public virtual void OnHitMagic(GameObject magicObj)
+    public virtual void OnHitMagic(MagicalFX.MagicInfo magic)
     {
         if (!enableWeakPoint) { return; }
-
-        var magic = magicObj.GetComponent<MagicalFX.MagicInfo>();
 
         if (!magic) { return; }
 

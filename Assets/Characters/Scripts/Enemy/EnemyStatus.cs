@@ -31,6 +31,7 @@ public class EnemyStatus : MobStatus
 
     [SerializeField] protected MovementController target;
     [SerializeField] protected float downTime = 1.0f;
+    [SerializeField] protected float downTimeCounter = 0.0f;
     protected string getHitAnimationName = "GetHit";
     protected bool isDown = false;
     protected bool isNearDist = false;
@@ -79,6 +80,18 @@ public class EnemyStatus : MobStatus
         animator.SetFloat("MoveSpeed", agent.velocity.magnitude);
 
         DieSEVolumeDown();
+    }
+
+    private void FixedUpdate()
+    {
+        if (downTimeCounter <= 0.0f) { return; }
+
+        downTimeCounter -= 1.0f * Time.deltaTime;
+
+        if(downTimeCounter <= 0.0f)
+        {
+            OnGetUp();
+        }
     }
 
     protected virtual void DieSEVolumeDown()
@@ -176,6 +189,8 @@ public class EnemyStatus : MobStatus
     {
         if(IsGetHit) { return; }
 
+        downTimeCounter = downTime;
+
         actionState = ActionState.eGetHit;
         agent.isStopped = true;
 
@@ -196,21 +211,21 @@ public class EnemyStatus : MobStatus
         if (!IsGetHit) { return; }
 
         isDown = false;
+        downTimeCounter = 0.0f;
 
         animator.SetTrigger("GetUp");
         actionState = ActionState.eNone;
     }
 
-    public virtual void OnDamage(GameObject magicObj)
+    public virtual void OnDamage(MagicalFX.MagicInfo magic)
     {
-        var magic = magicObj.GetComponent<MagicalFX.MagicInfo>();
         if (!magic) { return; }
 
         float damageVal = magic.Power;
 
         if(GetWeakPoint.IsExecution)
         {
-            GetWeakPoint.OnHitMagic(magicObj);
+            GetWeakPoint.OnHitMagic(magic);
 
             if((hp - damageVal) > 0.0f &&
                 GetWeakPoint.Hp() <= 0.0f)
@@ -245,8 +260,6 @@ public class EnemyStatus : MobStatus
         WeakPointContainer.Instance.AllRemove();
         EffectController.Instance.OnStopAllParticle();
         FallingLumpContainer.Instance.AllRemove();
-
-        // TODO : Tansition to Clear Scene
     }
 
     public virtual void OnSlowlyAnimation(float speed)

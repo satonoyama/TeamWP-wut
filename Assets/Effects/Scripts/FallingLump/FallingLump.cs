@@ -45,7 +45,7 @@ public class FallingLump: MonoBehaviour
 
     private bool IsHit => status == MoveState.eHit;
 
-    private bool IsExecutable => !IsHit && target;
+    public bool IsExecutable => !IsHit && target;
 
     private bool CheckCollisionByStage()
     {
@@ -148,7 +148,7 @@ public class FallingLump: MonoBehaviour
 
         if(owner.IsDie)
         {
-            StopFallingLump();
+            BreakFallingLump();
             return;
         }
 
@@ -184,7 +184,7 @@ public class FallingLump: MonoBehaviour
 
         if (CheckCollisionByStage())
         {
-            StopFallingLump();
+            BreakFallingLump();
         }
 
         if((lifeSpan -= Time.deltaTime) <= 0.0f)
@@ -225,7 +225,7 @@ public class FallingLump: MonoBehaviour
     }
 
     public void BreakFallingLump()
-    {
+    {   
         status = MoveState.eHit;
 
         transform.GetComponent<Collider>().enabled = false;
@@ -264,12 +264,6 @@ public class FallingLump: MonoBehaviour
         StartCoroutine(Transparent());
     }
 
-    private void StopFallingLump()
-    {
-        moveVec = Vector3.zero;
-        BreakFallingLump();
-    }
-
     public void OnHitTarget()
     {
         if (!IsExecutable) { return; }
@@ -306,20 +300,22 @@ public class FallingLump: MonoBehaviour
                 }
                 else if(IsHit)
                 {
+                    if(child.GetComponent<MeshRenderer>().material.color.a <= 0.0f) { continue; }
+
                     child.GetComponent<MeshRenderer>().material.color -= new Color32(0, 0, 0, 1);
-
-                    if(i >= maxColorCount - 1) 
-                    {
-                        if (explotionParticle && explotionParticle.isPlaying) 
-                        { explotionParticle.Stop(); }
-
-                        if (followSE) { followSE.Stop(); }
-
-                        Destroy(gameObject);
-                    }
                 }
             }
             yield return new WaitForSeconds(waitSeconds);
+        }
+
+        if(IsHit)
+        {
+            if (explotionParticle && explotionParticle.isPlaying)
+            { explotionParticle.Stop(); }
+
+            if (followSE) { followSE.Stop(); }
+
+            Destroy(gameObject);
         }
     }
 }

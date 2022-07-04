@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerStatus : MobStatus
 {
@@ -58,6 +59,9 @@ public class PlayerStatus : MobStatus
     protected override void OnDie()
     {
         if(state == StateEnum.eDie) { return; }
+
+        // ƒV[ƒ“‘JˆÚ
+        OnChangeScene("scene_GameOver");
 
         //base.OnDie();
     }

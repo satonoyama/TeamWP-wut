@@ -980,7 +980,7 @@ RectTransform:
   - {fileID: 1738754112}
   - {fileID: 1556373225}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1017,7 +1017,7 @@ RectTransform:
   m_Children:
   - {fileID: 1738923565}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1325,12 +1325,12 @@ PrefabInstance:
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 1268033720687149482, guid: f6ace473f2a41ce43ba6d584d13def54,
+      objectReference: {fileID: 7913739152732898400, guid: f6ace473f2a41ce43ba6d584d13def54,
         type: 3}
     - target: {fileID: 336868370395439142, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: MagicalFX.MagicInfo, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 336868370395439144, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
@@ -1496,7 +1496,7 @@ PrefabInstance:
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 1268033720687149482, guid: f6ace473f2a41ce43ba6d584d13def54,
+      objectReference: {fileID: 7913739152732898400, guid: f6ace473f2a41ce43ba6d584d13def54,
         type: 3}
     - target: {fileID: 336868371676198839, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
@@ -1506,7 +1506,7 @@ PrefabInstance:
     - target: {fileID: 336868371676198839, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: MagicalFX.MagicInfo, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 336868371676198840, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
@@ -1561,7 +1561,7 @@ PrefabInstance:
     - target: {fileID: 336868372294578882, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
       propertyPath: m_Speed
-      value: 2.5
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 336868372294578918, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
@@ -1773,12 +1773,12 @@ PrefabInstance:
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 1268033720687149482, guid: f6ace473f2a41ce43ba6d584d13def54,
+      objectReference: {fileID: 7913739152732898400, guid: f6ace473f2a41ce43ba6d584d13def54,
         type: 3}
     - target: {fileID: 336868372402656711, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: MagicalFX.MagicInfo, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 336868372402656712, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
@@ -3395,6 +3395,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4721785998630595567, guid: 098154b089112a140890b7fd2cab1603,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5308883734469341186, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
       propertyPath: m_Layer
@@ -3525,6 +3530,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pitch
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7732570145174325966, guid: 098154b089112a140890b7fd2cab1603,
+        type: 3}
+      propertyPath: m_Radius
+      value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 7886718625585855823, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
@@ -3685,12 +3695,12 @@ PrefabInstance:
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
-      objectReference: {fileID: 1268033720687149482, guid: f6ace473f2a41ce43ba6d584d13def54,
+      objectReference: {fileID: 7913739152732898400, guid: f6ace473f2a41ce43ba6d584d13def54,
         type: 3}
     - target: {fileID: 8541641510009536637, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
       propertyPath: onTriggerEnter.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
+      value: MagicalFX.MagicInfo, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8745572113588214586, guid: 098154b089112a140890b7fd2cab1603,
         type: 3}
